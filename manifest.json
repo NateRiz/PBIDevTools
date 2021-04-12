@@ -20,8 +20,8 @@
 	"permissions": [
 		"tabs",
 		"webRequest",
-		"*://*.powerbi.com/*",
-		"*://*.pbidedicated.windows.net/*",
-		"*://*.analysis.windows.net/*"
+		"*://*.powerbi.com/",
+		"*://*.pbidedicated.windows.net/",
+		"*://*.analysis.windows.net/"
 	]
 }

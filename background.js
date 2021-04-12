@@ -4,18 +4,15 @@ function isPbiReportUrl(url) {
 
 function addNetworkListener(){
 	chrome.webRequest.onHeadersReceived.addListener(function(response) {
-		chrome.tabs.query({
-			active: true,
-			currentWindow: true
-		}, function(tabs) {
-			if (response["method"] != "POST") {
-				return
-			}
-      chrome.tabs.sendMessage(tabs[0].id, response);
-		});
+    if (response["method"] != "POST"){
+      return;
+    }
+    chrome.tabs.sendMessage(response.tabId, response);
 	}, {
 		urls: [
-			"<all_urls>"
+			"*://*.pbidedicated.windows.net/*/ping",
+		  "*://*.analysis.windows.net/*/session",
+      "*://*.powerbi.com/*"
 		]
 	}, ["responseHeaders"]);
 }
@@ -29,7 +26,7 @@ function main() {
 				return
 			}
       if(changeInfo.status === "complete"){
-        chrome.tabs.insertCSS({file:"style.css"});
+        chrome.tabs.insertCSS(tabId, {file:"style.css"});
       }
 			chrome.tabs.executeScript(tabId, {
 				file: './foreground.js'

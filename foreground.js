@@ -66,7 +66,6 @@ function updateToolbarResult(id, value){
 }
 
 function networkDispatcher(message, sender, sendResponse){
-    console.log(message)
     textIds = {
         "requestid": "PbiDevRaid",
         "x-ms-routing-hint": "PbiDevHostMode"
