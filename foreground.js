@@ -2,16 +2,17 @@ function toggleModal(){
 
 }
 
-function createModal(){
-    //var iFrame  = document.createElement ("iframe");
-    //iFrame.src  = chrome.runtime.getURL('./debugWindow.html');
-    //iFrame.classList.add("PbiDevIframe");
-    //root.appendChild(iFrame);
+function expireSession(){
+    alert("Not implemented")
+}
 
+function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
         root.insertAdjacentHTML('beforeend', html);
+        document.querySelector("#PbiDevExpireNow").onclick = expireSession
     });
+
 }
 
 function createDebugButton(button) {

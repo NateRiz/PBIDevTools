@@ -16,3 +16,11 @@
 .PbiDevDebugResult{
     float: right;
 }
+
+.PbiDevCenter{
+    text-align: center;
+}
+
+.PbiDevButton{
+    background-color: lightgray;
+}
