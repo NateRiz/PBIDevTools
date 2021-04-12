@@ -1,0 +1,27 @@
+{
+	"name": "PowerBI Dev Tools",
+	"description": "PowerBI Dev Tools",
+	"version": "1.0",
+	"manifest_version": 2,
+	"icons": {
+		"16": "./icon16.png",
+		"32": "./icon32.png",
+		"48": "./icon48.png",
+		"128": "./icon128.png"
+	},
+	"background": {
+		"scripts": ["./background.js"],
+		"css":["./style.css"]
+	},
+	"web_accessible_resources": [
+		"debug16.png",
+		"debugWindow.html"
+	],
+	"permissions": [
+		"tabs",
+		"webRequest",
+		"*://*.powerbi.com/*",
+		"*://*.pbidedicated.windows.net/*",
+		"*://*.analysis.windows.net/*"
+	]
+}

@@ -1,0 +1,18 @@
+.PbiDevTitle{
+    color: #808080;
+    font-size: 16px;
+    text-align: right;
+}
+  
+.PbiDevDebugInfo{
+    font-size: 14px;
+    padding: 8px;
+    white-space:nowrap;
+}
+.PbiDevContainer{
+    width: 20% !important;
+}
+
+.PbiDevDebugResult{
+    float: right;
+}
