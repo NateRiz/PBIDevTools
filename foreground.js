@@ -11,8 +11,8 @@ function createModal(){
         root = document.querySelector("#rootContent");
         root.insertAdjacentHTML('beforeend', html);
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
+        
     });
-
 }
 
 function createDebugButton(button) {
@@ -63,7 +63,23 @@ function updateToolbarResult(id, value){
     if (node){
         node.textContent = value;
     }
+}
 
+function updateSessionTimer(timeSinceLastInteractionMs){
+    var timeSinceLastInteractionSec = Math.round(timeSinceLastInteractionMs / 1000)
+
+    var foregroundTimeout = 10 * 60 - timeSinceLastInteractionSec
+    var backgroundTimeout = 60 * 60 - timeSinceLastInteractionSec
+    
+    var mins = Math.floor(foregroundTimeout / 60)
+    var secs = foregroundTimeout % 60
+    var time = mins.toString().padStart(2, '0')+":"+secs.toString().padStart(2, '0')
+    updateToolbarResult("PBiDevTTLFG", time)
+
+    mins = Math.floor(backgroundTimeout / 60)
+    secs = backgroundTimeout % 60
+    time = mins.toString().padStart(2, '0')+":"+secs.toString().padStart(2, '0')
+    updateToolbarResult("PBiDevTTLBG", time)
 }
 
 function networkDispatcher(message, sender, sendResponse){
@@ -71,14 +87,21 @@ function networkDispatcher(message, sender, sendResponse){
         "requestid": "PbiDevRaid",
         "x-ms-routing-hint": "PbiDevHostMode"
     };
-    message.responseHeaders.forEach(header => {
-        if (!("name" in header && "value" in header)){
-            return;
-        }
-        if (header["name"] in textIds){
-            updateToolbarResult(textIds[header["name"]], header["value"])
-        }
-    });
+    if ("responseHeaders" in message){
+        message.responseHeaders.forEach(header => {
+            if (!("name" in header && "value" in header)){
+                return;
+            }
+            if (header["name"] in textIds){
+                updateToolbarResult(textIds[header["name"]], header["value"])
+            }
+        });
+        return;
+    }
+    if(message["timeSinceLastInteractionMs"]){
+        updateSessionTimer(message["timeSinceLastInteractionMs"])
+    }
+
 } 
 
 function main() {
