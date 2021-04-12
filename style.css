@@ -11,6 +11,7 @@
 }
 .PbiDevContainer{
     width: 20% !important;
+    display: block;
 }
 
 .PbiDevDebugResult{

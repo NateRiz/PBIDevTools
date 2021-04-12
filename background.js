@@ -48,3 +48,8 @@ function main() {
 }
 
 main()
+/*
+TODO:
+- activityTypes
+- expire now
+*/

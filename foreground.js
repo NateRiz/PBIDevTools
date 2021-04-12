@@ -1,5 +1,11 @@
 function toggleModal(){
-
+    var modal = document.querySelector(".PbiDevContainer")
+    if(!modal){
+        return;
+    }
+    var display = modal.style.display
+    display = (display == "none" ? "block" : "none");
+    modal.style.display = display
 }
 
 function expireSession(){
