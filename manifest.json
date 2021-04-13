@@ -10,19 +10,20 @@
 		"128": "./icon128.png"
 	},
 	"background": {
-		"scripts": ["./background.js"],
+		"scripts": ["./background.js","./jquery-2.2.0.min.js"],
 		"css":["./style.css"]
 	},
 	"web_accessible_resources": [
 		"debug16.png",
+		"copy.png",
 		"debugWindow.html"
 	],
 	"permissions": [
 		"tabs",
 		"webRequest",
 		"webRequestBlocking",
-		"*://*.powerbi.com/",
-		"*://*.pbidedicated.windows.net/",
-		"*://*.analysis.windows.net/"
+		"*://*.powerbi.com/*",
+		"*://*.pbidedicated.windows.net/*",
+		"*://*.analysis.windows.net/*"
 	]
 }

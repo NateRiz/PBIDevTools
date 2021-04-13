@@ -1,3 +1,7 @@
+
+var requestHeadersCache = {}
+var sessionUrl = ""
+
 function toggleModal(){
     var modal = document.querySelector(".PbiDevContainer")
     if(!modal){
@@ -9,15 +13,36 @@ function toggleModal(){
 }
 
 function expireSession(){
-    alert("Not implemented")
+    $.ajax({
+        url : sessionUrl,
+        method : 'DELETE',
+        headers: requestHeadersCache
+   })
+    console.log(requestHeadersCache)
 }
 
 function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
         root.insertAdjacentHTML('beforeend', html);
+
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
-        
+
+        var copyImages = document.querySelectorAll(".PbiDevCopy")
+        copyImages.forEach(function(image){
+            image.src = chrome.runtime.getURL("./copy.png");
+        })
+
+        var raidCopy = document.querySelector("#PbiDevRaidCopy")
+        raidCopy.onclick = function(){
+            var raid = document.querySelector("#PbiDevRaid")
+            var textArea = document.createElement("textarea");
+            textArea.value = raid.textContent;
+            document.body.appendChild(textArea);
+            textArea.select()
+            document.execCommand("copy")
+            textArea.remove();
+        }
     });
 }
 
@@ -56,7 +81,6 @@ function isPageLoaded(){
 }
 
 function updateToolbarResult(id, value){
-    console.log("Updating ", id, "with ", value);
     if (id === "PbiDevHostMode"){
         if (value.includes("autopremiumhost")){
             value = "AutoPremium"
@@ -104,6 +128,12 @@ function networkDispatcher(message, sender, sendResponse){
         });
         return;
     }
+    if("requestHeaders" in message){
+        requestHeadersCache = message["requestHeaders"]
+        sessionUrl = message["url"].replace("/ping", "")
+        requestHeadersCache.push({'name':'Access-Control-Allow-Origin','value':sessionUrl});
+        return;
+    }
     if(message["timeSinceLastInteractionMs"]){
         updateSessionTimer(message["timeSinceLastInteractionMs"])
     }
@@ -112,14 +142,12 @@ function networkDispatcher(message, sender, sendResponse){
 
 function main() {
     if (isAlreadyInjected() || !isPageLoaded()){
-        console.log("Already injected or can't find sibling")
         return;
     }
 
     chrome.runtime.onMessage.addListener(networkDispatcher)
 
     var button = document.querySelector("#feedbackMenuBtn");
-    console.log("Injecting Foreground...")
     createDebugButton(button);
     createModal()
 }

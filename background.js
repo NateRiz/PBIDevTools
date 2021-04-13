@@ -26,7 +26,18 @@ function addNetworkListener(){
       }
   },
   {
-    urls: ["<all_urls>"]}, ["blocking", "requestBody"])
+    urls: ["<all_urls>"]}, ["requestBody"])
+
+    chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
+      if (requestHeaders["method"] != "POST"){
+        return;
+      }
+      chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
+    },
+    {urls: [
+			"*://*.pbidedicated.windows.net/*/ping",
+      "*://*.powerbi.com/*"
+		]}, ["requestHeaders"])
 }
 
 function main() {
@@ -40,9 +51,11 @@ function main() {
       if(changeInfo.status === "complete"){
         chrome.tabs.insertCSS(tabId, {file:"style.css"});
       }
-			chrome.tabs.executeScript(tabId, {
-				file: './foreground.js'
-			}, () => {});
+      chrome.tabs.executeScript(tabId, { file: "./jquery-2.2.0.min.js" }, function() {
+        chrome.tabs.executeScript(tabId, {
+          file: './foreground.js'
+        }, () => {});
+      });
 		});
 	});
 }
@@ -50,6 +63,10 @@ function main() {
 main()
 /*
 TODO:
+- both raid types
 - activityTypes
 - expire now
+- copy to clipboard
+- copy to kusto query
+- feature switches
 */

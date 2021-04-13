@@ -9,8 +9,13 @@
     padding: 8px;
     white-space:nowrap;
 }
+
+.PbiDevDebugPair{
+    padding-bottom: 8px;
+}
+
 .PbiDevContainer{
-    width: 20% !important;
+    width: 425px !important;
     display: block;
 }
 
@@ -24,4 +29,10 @@
 
 .PbiDevButton{
     background-color: lightgray;
+}
+
+.PbiDevCopy{
+    padding-left: 4px;
+    vertical-align: middle;
+    cursor: pointer;
 }
