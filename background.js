@@ -1,3 +1,5 @@
+var deleteSessionUrl = ""
+
 function isPbiReportUrl(url) {
 	return /.*powerbi\.com.*\/rdlreports\/.*/.test(url)
 }
@@ -16,6 +18,11 @@ function addNetworkListener(){
 		]}, ["responseHeaders"]);
 
   chrome.webRequest.onBeforeRequest.addListener(function(request){
+    if (request["method"] == "DELETE"){
+      if(request.url == deleteSessionUrl){
+        return {cancel: true};
+      }
+    }
     if (request["method"] != "POST"){
       return;
     }
@@ -26,13 +33,14 @@ function addNetworkListener(){
       }
   },
   {
-    urls: ["<all_urls>"]}, ["requestBody"])
+    urls: ["<all_urls>"]}, ["blocking", "requestBody"])
 
     chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
       if (requestHeaders["method"] != "POST"){
         return;
       }
       chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
+      
     },
     {urls: [
 			"*://*.pbidedicated.windows.net/*/ping",
@@ -40,8 +48,19 @@ function addNetworkListener(){
 		]}, ["requestHeaders"])
 }
 
+function addContentListener(){
+  chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      if (request.deleteSessionUrl){
+        deleteSessionUrl = request.deleteSessionUrl
+      }
+    }
+  );
+}
+
 function main() {
   addNetworkListener();
+  addContentListener();
 
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		chrome.tabs.get(tabId, current_tab_info => {
