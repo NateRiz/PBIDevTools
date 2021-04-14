@@ -95,7 +95,11 @@ function updateToolbarResult(id, value){
         }else{
             value = "Classic"
         }
-    }    
+    }
+
+    if (id === "PbiDevCluster"){
+        value = value.match(/https:\/\/(.*)-redirect/)[1]
+    }
 
     var node = document.querySelector("#"+id)
     if (node){
@@ -123,7 +127,13 @@ function updateSessionTimer(timeSinceLastInteractionMs){
 function networkDispatcher(message, sender, sendResponse){
     textIds = {
         "requestid": "PbiDevRaid",
-        "x-ms-routing-hint": "PbiDevHostMode"
+        "x-ms-routing-hint": "PbiDevHostMode",
+        "cluster":"PbiDevCluster",
+        "capacityId":"PbiDevCapacity",
+        "sessionId":"PbiDevSession",
+        "userObjectId":"PbiDevUser",
+        "tenantObjectId":"PbiDevTenant",
+        "reportViewerVersion":"PbiDevReportViewer"
     };
     if (message.responseHeaders){
         message.responseHeaders.forEach(header => {
@@ -137,19 +147,36 @@ function networkDispatcher(message, sender, sendResponse){
         return;
     }
     if(message.requestHeaders){
-        headers = message["requestHeaders"]
+        headers = message["requestHeaders"];
         headers.forEach(pair => {
             if (pair["name"] != "User-Agent"){
-                requestHeadersCache[pair["name"]]=pair["value"]
+                requestHeadersCache[pair["name"]]=pair["value"];
             }
         })
-        sessionUrl = message["url"].replace("/ping", "")
-        //requestHeadersCache.push({'name':'Access-Control-Allow-Origin','value':sessionUrl});
+        sessionUrl = message["url"].replace("/ping", "");
         return;
     }
     if(message.timeSinceLastInteractionMs){
-        updateSessionTimer(message["timeSinceLastInteractionMs"])
+        updateSessionTimer(message["timeSinceLastInteractionMs"]);
     }
+
+
+    if(!Array.isArray(message)){
+        return;
+    }
+    console.log("...",message)
+    properties = undefined;
+    message.forEach(trace => {
+        if (properties){
+            return;
+        }
+        properties = trace.data?.baseData?.properties;
+        for(var key in properties){
+            if (key in textIds){
+                updateToolbarResult(textIds[key], properties[key])
+            }
+        }
+    })
 
 } 
 

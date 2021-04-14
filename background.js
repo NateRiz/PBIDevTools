@@ -65,10 +65,9 @@ main()
 TODO:
 - both raid types
 - activityTypes
-- expire now
 - artificial pings for no expire
-- copy to clipboard
 - copy to kusto query
 - feature switches
 - autofill TSG
+- tenant/rolloutfqdn
 */

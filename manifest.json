@@ -24,6 +24,7 @@
 		"webRequestBlocking",
 		"*://*.powerbi.com/*",
 		"*://*.pbidedicated.windows.net/*",
-		"*://*.analysis.windows.net/*"
+		"*://*.analysis.windows.net/*",
+		"*://*.dc.services.visualstudio.com/*"
 	]
 }
