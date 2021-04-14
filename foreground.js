@@ -47,6 +47,9 @@ function createModal(){
 }
 
 function createDebugButton(button) {
+    var button = document.querySelector("#feedbackMenuBtn");
+
+
     //Clone button to remove click functionality
     debugButton = button.cloneNode(true);
     parent = button.parentNode;
@@ -117,7 +120,7 @@ function networkDispatcher(message, sender, sendResponse){
         "requestid": "PbiDevRaid",
         "x-ms-routing-hint": "PbiDevHostMode"
     };
-    if ("responseHeaders" in message){
+    if (message.responseHeaders){
         message.responseHeaders.forEach(header => {
             if (!("name" in header && "value" in header)){
                 return;
@@ -128,13 +131,13 @@ function networkDispatcher(message, sender, sendResponse){
         });
         return;
     }
-    if("requestHeaders" in message){
+    if(message.requestHeaders){
         requestHeadersCache = message["requestHeaders"]
         sessionUrl = message["url"].replace("/ping", "")
         requestHeadersCache.push({'name':'Access-Control-Allow-Origin','value':sessionUrl});
         return;
     }
-    if(message["timeSinceLastInteractionMs"]){
+    if(message.timeSinceLastInteractionMs){
         updateSessionTimer(message["timeSinceLastInteractionMs"])
     }
 
@@ -147,8 +150,7 @@ function main() {
 
     chrome.runtime.onMessage.addListener(networkDispatcher)
 
-    var button = document.querySelector("#feedbackMenuBtn");
-    createDebugButton(button);
+    createDebugButton();
     createModal()
 }
 
