@@ -12,15 +12,6 @@ function toggleModal(){
     modal.style.display = display
 }
 
-function expireSession(){
-    $.ajax({
-        url : sessionUrl,
-        method : 'DELETE',
-        headers: requestHeadersCache
-   })
-    console.log(requestHeadersCache)
-}
-
 function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
@@ -44,6 +35,20 @@ function createModal(){
             textArea.remove();
         }
     });
+}
+
+function expireSession(){
+    $.ajax({
+        url : sessionUrl,
+        method : 'DELETE',
+        headers: requestHeadersCache,
+        error: function(request, status, error){
+            alert("Error while deleting session: " + request.status.toString())
+        },
+        success: function (data, text){
+            alert("Successfully deleted session.")
+        }
+   })
 }
 
 function createDebugButton(button) {
@@ -132,9 +137,14 @@ function networkDispatcher(message, sender, sendResponse){
         return;
     }
     if(message.requestHeaders){
-        requestHeadersCache = message["requestHeaders"]
+        headers = message["requestHeaders"]
+        headers.forEach(pair => {
+            if (pair["name"] != "User-Agent"){
+                requestHeadersCache[pair["name"]]=pair["value"]
+            }
+        })
         sessionUrl = message["url"].replace("/ping", "")
-        requestHeadersCache.push({'name':'Access-Control-Allow-Origin','value':sessionUrl});
+        //requestHeadersCache.push({'name':'Access-Control-Allow-Origin','value':sessionUrl});
         return;
     }
     if(message.timeSinceLastInteractionMs){
@@ -149,7 +159,6 @@ function main() {
     }
 
     chrome.runtime.onMessage.addListener(networkDispatcher)
-
     createDebugButton();
     createModal()
 }
