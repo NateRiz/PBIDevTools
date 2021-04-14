@@ -22,18 +22,18 @@ function createModal(){
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
             image.src = chrome.runtime.getURL("./copy.png");
+            image.onclick = function(){
+                var siblingId = image.id.replace("Copy","")
+                var text = document.querySelector("#"+siblingId)
+                var textArea = document.createElement("textarea");
+                textArea.value = text.textContent;
+                document.body.appendChild(textArea);
+                textArea.select()
+                document.execCommand("copy")
+                textArea.remove();
+            }
         })
 
-        var raidCopy = document.querySelector("#PbiDevRaidCopy")
-        raidCopy.onclick = function(){
-            var raid = document.querySelector("#PbiDevRaid")
-            var textArea = document.createElement("textarea");
-            textArea.value = raid.textContent;
-            document.body.appendChild(textArea);
-            textArea.select()
-            document.execCommand("copy")
-            textArea.remove();
-        }
     });
 }
 
