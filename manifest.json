@@ -9,6 +9,7 @@
 		"48": "./icon48.png",
 		"128": "./icon128.png"
 	},
+	"content_security_policy": "script-src 'self'; script-src-elem 'self' data: blob:; worker-src 'self' data: blob:; object-src 'self'",
 	"background": {
 		"scripts": ["./background.js","./jquery-2.2.0.min.js"],
 		"css":["./style.css"]
@@ -16,6 +17,7 @@
 	"web_accessible_resources": [
 		"debug16.png",
 		"copy.png",
+		"activities.json",
 		"debugWindow.html"
 	],
 	"permissions": [
@@ -25,6 +27,7 @@
 		"*://*.powerbi.com/*",
 		"*://*.pbidedicated.windows.net/*",
 		"*://*.analysis.windows.net/*",
-		"*://*.dc.services.visualstudio.com/*"
+		"*://*.dc.services.visualstudio.com/*",
+		"<all_urls>"
 	]
 }

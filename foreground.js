@@ -1,4 +1,3 @@
-
 var requestHeadersCache = {};
 var sessionUrl = "";
 var pingUrl = "";
@@ -202,7 +201,7 @@ function networkDispatcher(message, sender, sendResponse){
 
     properties = undefined;
     message.forEach(trace => {
-        if (properties){
+        if (properties || !trace.data?.baseData?.name?.startsWith("RS.Fresno")){
             return;
         }
         properties = trace.data?.baseData?.properties;
@@ -212,19 +211,32 @@ function networkDispatcher(message, sender, sendResponse){
             }
         }
     })
-
 } 
 
+function checkForActivityTypes(){
+    console.log("starting")
+    activityTypes = []
+    var elems = document.querySelectorAll("h1, h2, h3, h4, h5, p, li, td, caption, span, a")
+    Array.from(elems).forEach((v)=>{
+        for(var key in activityTypes){
+            if(v.textContent.includes("EMSP") && !v.children.length){
+                console.log(v) 
+            }
+          }
+        })
+}
+
 function main() {
+    checkForActivityTypes();
+
     if (isAlreadyInjected() || !isPageLoaded()){
         return;
     }
-
-    chrome.runtime.onMessage.addListener(networkDispatcher)
+    
+    chrome.runtime.onMessage.addListener(networkDispatcher);
     createDebugButton();
-    createModal()
-
-    setInterval(artificialPing, 10000)
+    createModal();
+    setInterval(artificialPing, 10000);
 }
 
 main();

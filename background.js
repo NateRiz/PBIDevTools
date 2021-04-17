@@ -29,7 +29,11 @@ function addNetworkListener(){
     if (request.requestBody && request.requestBody.raw){
       var postedString = decodeURIComponent(String.fromCharCode.apply(null,
           new Uint8Array(request.requestBody.raw[0].bytes)));
-          chrome.tabs.sendMessage(request.tabId, JSON.parse(postedString));
+            try{
+              chrome.tabs.sendMessage(request.tabId, JSON.parse(postedString));
+            } catch(err){
+              
+            }
       }
   },
   {
@@ -63,6 +67,8 @@ function main() {
   addContentListener();
 
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    chrome.tabs.executeScript(tabId, { file: './activityTypeParser.js' }, () => {});
+
 		chrome.tabs.get(tabId, current_tab_info => {
 			if (!isPbiReportUrl(current_tab_info.url)) {
 				return
@@ -71,9 +77,7 @@ function main() {
         chrome.tabs.insertCSS(tabId, {file:"style.css"});
       }
       chrome.tabs.executeScript(tabId, { file: "./jquery-2.2.0.min.js" }, function() {
-        chrome.tabs.executeScript(tabId, {
-          file: './foreground.js'
-        }, () => {});
+        chrome.tabs.executeScript(tabId, { file: './foreground.js' }, () => {});
       });
 		});
 	});
@@ -82,11 +86,10 @@ function main() {
 main()
 /*
 TODO:
-- both raid types
 - activityTypes
-- artificial pings for no expire
 - copy to kusto query
 - feature switches
 - autofill TSG
-- tenant/rolloutfqdn
+- exportTo
+- private chrome extensions
 */
