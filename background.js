@@ -97,4 +97,6 @@ TODO:
 - private chrome extensions
 - info tooltips on toolbar features
 - auth into adhoc accounts 
+- fix edog raid
+- train
 */

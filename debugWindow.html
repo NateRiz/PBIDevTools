@@ -102,14 +102,29 @@
 
     <div class="PbiDevCenter">
       <button class="PbiDevButton" , id="PbiDevExpireNow" , type="button">Delete Session</button>
+      <img id="DeleteSessionInfo" class="PbiDevInfo">
+      <span id="DeleteSessionInfoTooltip" class="PbiDevInfoTooltip">
+        * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died.
+        <br>
+        <br>
+      </span>
     </div>
 
     <div class="PbiDevDebugPair">
       Allow Session Expiration:
+      <img id="SessionExpireInfo" class="PbiDevInfo">
       <div class="PbiDevDebugResult">
-        <input id="PbiDevPingToggle", type="checkbox" checked>
+        <input id="PbiDevPingToggle" , type="checkbox" checked>
       </div>
     </div>
-    
+    <div>
+      <span id="SessionExpireInfoTooltip" class="PbiDevInfoTooltip">
+        * If disabled, blocks delete session requests and sends artificial pings to keep the session alive.
+        <br>
+        <br>
+      </span>
+    </div>
+
   </div>
+</div>
 </div>

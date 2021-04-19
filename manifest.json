@@ -18,6 +18,7 @@
 	"web_accessible_resources": [
 		"debug16.png",
 		"copy.png",
+		"info.png",
 		"activities.json",
 		"debugWindow.html"
 	],

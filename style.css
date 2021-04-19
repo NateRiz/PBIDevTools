@@ -36,3 +36,15 @@
     vertical-align: middle;
     cursor: pointer;
 }
+
+.PbiDevInfo{
+    padding-left: 4px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.PbiDevInfoTooltip{
+    white-space: normal;
+    text-align: left;
+    font-size: 12px;
+}

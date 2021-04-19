@@ -37,6 +37,19 @@ function createModal(){
             }
         })
 
+        var sessionExpireInfo = document.querySelectorAll(".PbiDevInfo")
+        sessionExpireInfo.forEach((img)=>{
+            img.src = chrome.runtime.getURL("./info.png")
+            var tooltip = document.querySelector("#"+ img.id +"Tooltip")
+            tooltip.style.display = "none";
+            img.onclick = function(){
+                if (!tooltip){return;}
+                var display = tooltip.style.display
+                display = (display == "none" ? "block" : "none");
+                tooltip.style.display = display
+            }
+        })
+
     });
 }
 
