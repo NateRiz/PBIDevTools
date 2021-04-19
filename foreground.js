@@ -1,4 +1,3 @@
-var isDevToolbarEnabled = false
 var requestHeadersCache = {};
 var sessionUrl = "";
 var pingUrl = "";
@@ -76,7 +75,7 @@ function artificialPing(){
         data: _data,
         contentType: "application/json",
         error: function(request, status, error){
-            alert("Error attempting artificial ping: " + request.status.toString())
+            alert("Error attempting artificial ping: " + request.status.toString() + ":" + error)
         }
    })
 
@@ -227,29 +226,16 @@ function networkDispatcher(message, sender, sendResponse){
     })
 } 
 
-function loadExtensionSettingsAndRun(){
-    chrome.storage.sync.get(["DevToolbar"], function(data){
-        isDevToolbarEnabled = !(data.DevToolbar === false)
-        runExtension();
-    });
-}
-
-function runExtension(){
-
-    if (isDevToolbarEnabled){
-        if (isAlreadyInjected() || !isPageLoaded()){
-            return;
-        }
-        
-        chrome.runtime.onMessage.addListener(networkDispatcher);
-        createDebugButton();
-        createModal();
-        setInterval(artificialPing, 10000);
-    }
-}
 
 function main() {
-    loadExtensionSettingsAndRun();
+    if (isAlreadyInjected() || !isPageLoaded()){
+        return;
+    }
+    
+    chrome.runtime.onMessage.addListener(networkDispatcher);
+    createDebugButton();
+    createModal();
+    setInterval(artificialPing, 10000);
 }
 
 main();

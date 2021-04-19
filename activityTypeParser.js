@@ -45,27 +45,12 @@ async function checkForActivityTypes(){
     })
 }
 
-
-function loadExtensionSettingsAndRun(){
-    chrome.storage.sync.get(["ActivityTypeTooltips"], function(data){
-        isActivityTypeTooltipsEnabled = !(data.ActivityTypeTooltips === false)
-        runExtension();
-    });
-}
-
-function runExtension(){
-    if(isActivityTypeTooltipsEnabled){
-        fetch(chrome.extension.getURL('/activities.json'))
-        .then((resp) => resp.json())
-        .then(function (jsonData) {activityTypes = jsonData})
-        .then(() => checkForActivityTypes())
-    }
-}
-
 function main(){
-    loadExtensionSettingsAndRun()
+    fetch(chrome.extension.getURL('/activities.json'))
+    .then((resp) => resp.json())
+    .then(function (jsonData) {activityTypes = jsonData})
+    .then(() => checkForActivityTypes())
 }
-
 
 if (document.readyState === "complete") {
     main();
