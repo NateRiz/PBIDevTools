@@ -4,6 +4,10 @@ function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
 }
 
+function isChromeLocalUrl(url) {
+  return /chrome:\/\/.*/.test(url)
+}
+
 function addHeadersReceivedListener(){
   /**
    * Fills in info for debug toolbar
@@ -77,6 +81,9 @@ function addContentListener(){
 
 function addTabUpdateListener(){
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (isChromeLocalUrl(tab.url)){
+      return
+    }
     startScriptExecution('ActivityTypeTooltips', ['./activityTypeParser.js'], tabId)
 
     if (!isPbiReportUrl(tab.url)) {
