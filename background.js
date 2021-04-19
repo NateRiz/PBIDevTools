@@ -1,7 +1,7 @@
 var deleteSessionUrl = ""
 
 function isPbiReportUrl(url) {
-	return /.*powerbi\.com.*\/rdlreports\/.*/.test(url)
+	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
 }
 
 function addNetworkListener(){
@@ -63,6 +63,10 @@ function addContentListener(){
 }
 
 function main() {
+  chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.browserAction.setPopup({"popup":"./popup.html"})
+  });
+
   addNetworkListener();
   addContentListener();
 
@@ -86,10 +90,11 @@ function main() {
 main()
 /*
 TODO:
-- activityTypes
 - copy to kusto query
 - feature switches
 - autofill TSG
 - exportTo
 - private chrome extensions
+- info tooltips on toolbar features
+- auth into adhoc accounts 
 */

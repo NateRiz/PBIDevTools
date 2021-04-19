@@ -1,7 +1,7 @@
 var activityTypes = {}
+var isActivityTypeTooltipsEnabled = false
 
 function injectTooltip(node, activityType){
-    console.log("injecting")
     var span = document.createElement("span");
     span.title = activityTypes[activityType]
     span.classList.add("PbiDevActivityTypeTooltip")
@@ -10,7 +10,6 @@ function injectTooltip(node, activityType){
     span.style.borderWidth = "1px"
     span.appendChild(document.createTextNode(activityType));
     var idx = node.textContent.indexOf(activityType)
-    console.log(node, activityType, idx)
     node.childNodes[0].textContent = node.childNodes[0].textContent.replace(activityType, "")
     node.insertBefore(span, node.childNodes[0].splitText(idx))
 }
@@ -35,11 +34,9 @@ async function checkForActivityTypes(){
         }
     })
 
-    console.log(Object.keys(map))
     var activityKeys = Object.keys(activityTypes)
     Array.from(activityKeys).forEach((k)=>{
         if (map[k]){
-            console.log("key:",k)
             var elements = map[k]
             Array.from(elements).forEach((elem)=>{
                 injectTooltip(elem, k)
@@ -48,24 +45,30 @@ async function checkForActivityTypes(){
     })
 }
 
-async function main(){
-    console.log("STARTING!!!")
-    if(!activityTypes.length){
+
+function loadExtensionSettingsAndRun(){
+    chrome.storage.sync.get(["ActivityTypeTooltips"], function(data){
+        isActivityTypeTooltipsEnabled = !(data.ActivityTypeTooltips === false)
+        runExtension();
+    });
+}
+
+function runExtension(){
+    if(isActivityTypeTooltipsEnabled){
         fetch(chrome.extension.getURL('/activities.json'))
         .then((resp) => resp.json())
         .then(function (jsonData) {activityTypes = jsonData})
         .then(() => checkForActivityTypes())
     }
-    else{
-        // Twice because above is async
-        checkForActivityTypes()
-    }
 }
 
+function main(){
+    loadExtensionSettingsAndRun()
+}
+
+
 if (document.readyState === "complete") {
-    console.log("COMPLEtE")
     main();
 } else {
-    console.log("listening...")
     window.addEventListener("DOMContentLoaded", main);
 }
