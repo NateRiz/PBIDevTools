@@ -54,6 +54,4 @@ function main(){
 
 if (document.readyState === "complete") {
     main();
-} else {
-    window.addEventListener("DOMContentLoaded", main);
 }

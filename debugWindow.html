@@ -101,10 +101,10 @@
     </div>
 
     <div class="PbiDevCenter">
-      <button class="PbiDevButton" , id="PbiDevExpireNow" , type="button">Delete Session</button>
+      <button class="PbiDevButton" id="PbiDevExpireNow" disabled type="button">Delete Session</button>
       <img id="DeleteSessionInfo" class="PbiDevInfo">
       <span id="DeleteSessionInfoTooltip" class="PbiDevInfoTooltip">
-        * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died.
+        * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died. Disabled until first ping occurs.
         <br>
         <br>
       </span>
@@ -114,7 +114,7 @@
       Allow Session Expiration:
       <img id="SessionExpireInfo" class="PbiDevInfo">
       <div class="PbiDevDebugResult">
-        <input id="PbiDevPingToggle" , type="checkbox" checked>
+        <input id="PbiDevPingToggle" type="checkbox" checked>
       </div>
     </div>
     <div>

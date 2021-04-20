@@ -1,5 +1,10 @@
 var isKeepingSessionAlive = false;
+var sessionUrl = ""
+var bearerToken = ""
 
+function isPingUrl(url){
+    return /.*pbidedicated.windows.net.*ping/.test(url)
+}
 
 function toggleModal(){
     var modal = document.querySelector(".PbiDevContainer")
@@ -56,10 +61,11 @@ function toggleKeepSessionAlive(){
 }
 
 function expireSession(){
+    console.log("deleting", sessionUrl)
     $.ajax({
         url : sessionUrl,
         method : 'DELETE',
-        headers: requestHeadersCache,
+        headers: {"Authorization": bearerToken},
         error: function(request, status, error){
             alert("Error while deleting session: " + request.status.toString())
         },
@@ -67,6 +73,13 @@ function expireSession(){
             alert("Successfully deleted session.")
         }
    })
+}
+
+function enableDeleteSessionButton(){
+    var deleteSessionButton = document.querySelector("#PbiDevExpireNow")
+    if (deleteSessionButton){
+        deleteSessionButton.disabled = false;
+    }
 }
 
 function createDebugButton(button) {
@@ -163,6 +176,17 @@ function networkDispatcher(message, sender, sendResponse){
             }
         });
         return;
+    }
+
+    if(message.requestHeaders){
+        if (!sessionUrl && isPingUrl(message.url)){
+            sessionUrl = message.url.replace("/ping","")
+            console.log(message)
+            var auth = message.requestHeaders.find(header => header["name"] === "Authorization")
+            bearerToken = auth["value"]
+            console.log(sessionUrl, bearerToken)
+            enableDeleteSessionButton()
+        }
     }
     if(message.timeSinceLastInteractionMs){
         updateSessionTimer(message["timeSinceLastInteractionMs"]);

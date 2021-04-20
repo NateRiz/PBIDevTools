@@ -17,14 +17,25 @@ function addHeadersReceivedListener(){
     chrome.tabs.sendMessage(response.tabId, response);
 	}, {
 		urls: [
-			"*://*.pbidedicated.windows.net/*/ping", // ping
-		  "*://*.analysis.windows.net/*/session", // session
+			"*://*.pbidedicated.windows.net/*/ping", // ping (hostmode)
+		  "*://*.analysis.windows.net/*/session", // session (raid)
 		]}, ["responseHeaders"]);
 }
 
+chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
+  if (requestHeaders["method"] != "POST"){
+    return;
+  }
+  chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
+
+},
+{urls: [
+  "*://*.pbidedicated.windows.net/*/ping",
+  "*://*.powerbi.com/*"
+]}, ["requestHeaders"])
+
 function addBeforeRequestListener(){
   /**
-   * Delete: blocks delete session request if "Allow Session Expiration" is disabled
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
@@ -156,7 +167,5 @@ TODO:
 - auth into adhoc accounts 
 - fix edog raid
 - train
-- disable delete session until url set
-- remove caching of ping url and build url instead
-- fix allow session expiration
+- fix activities json loading in multiple times
 */
