@@ -1,5 +1,3 @@
-var deleteSessionUrl = ""
-
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
 }
@@ -30,11 +28,6 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
-    if (request["method"] == "DELETE"){
-      if(request.url == deleteSessionUrl){
-        return {cancel: true};
-      }
-    }
     if (request["method"] != "POST"){
       return;
     }
@@ -50,33 +43,7 @@ function addBeforeRequestListener(){
     urls: [
       "*://*.pbidedicated.windows.net/*",
       "*://*.dc.services.visualstudio.com/v2/track"
-    ]}, ["blocking", "requestBody"])
-}
-
-function addBeforeSendHeadersListener(){
-  /**
-   * Caches ping request to use for Delete Session button and artificial pings
-   */
-  chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
-    if (requestHeaders["method"] != "POST"){
-      return;
-    }
-    chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
-    
-  },
-  {urls: [
-    "*://*.pbidedicated.windows.net/*/ping",
-  ]}, ["requestHeaders"])
-}
-
-function addContentListener(){
-  chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-      if (request.deleteSessionUrl){
-        deleteSessionUrl = request.deleteSessionUrl
-      }
-    }
-  );
+    ]}, ["requestBody"])
 }
 
 function addTabUpdateListener(){
@@ -84,33 +51,56 @@ function addTabUpdateListener(){
     if (isChromeLocalUrl(tab.url)){
       return
     }
-    startScriptExecution('ActivityTypeTooltips', ['./activityTypeParser.js'], tabId)
 
+    //Below here are all non Chrome://xyz urls
+    startScriptExecution('ActivityTypeTooltips', ['./activityTypeParser.js'], tabId)
+    
+    //Below here are only pbi reports
     if (!isPbiReportUrl(tab.url)) {
       return
     }
 
-    startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './foreground.js'], tabId, ()=>{
+    chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
+      frames.forEach((frame)=>{
+        if(frame.parentFrameId == 0){
+          startScriptExecution('DevToolbar', ['./Anaheim.js'], tabId, frame.frameId)
+        }
+      })
+    });
+
+    startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })
 
 	});
 }
 
-function startScriptExecution(featureName, scriptFilePaths, tabId, callback=()=>{}, bypass=false){
+function addContentListener(){
+  chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      if (request.isKeepingSessionAlive){
+        //Mirror it back so that it gets sent to the iframe
+        chrome.tabs.sendMessage(sender.tab.id, request);
+      }
+    }
+  );
+}
+
+function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, callback=()=>{}, bypass=false){
   /**
    * Recursively executes all scripts passed in if the feature is enabled. Scripts are executed in order
    * @param {string} featureName name of the feature that will get checked in chrome storage
    * @param {Array[string]} scriptFilePaths all JS filepaths to get executed in order
    * @param {number} tabId tab to execute in
+   * @param {number} frameId optional frame to execute inside the tab. Default 0 is top level.
    * @param {function} callback optional callback to run after all scripts execute
    * @param {boolean} bypass if there are multiple scripts, bypass checking feature status multiple times
    */
   let func = ()=>{
     scriptPath = scriptFilePaths.shift()
-    chrome.tabs.executeScript(tabId, {'file': scriptPath}, () => {
+    chrome.tabs.executeScript(tabId, {'file': scriptPath, 'frameId': frameId}, () => {
       if (scriptFilePaths.length){
-        startScriptExecution(featureName, scriptFilePaths,tabId, callback, true)
+        startScriptExecution(featureName, scriptFilePaths,tabId, frameId, callback, true)
       }else{
         callback()
       }
@@ -151,7 +141,6 @@ function main() {
   addBrowserActionListener();
   addHeadersReceivedListener();
   addBeforeRequestListener();
-  addBeforeSendHeadersListener();
   addContentListener();
   addTabUpdateListener();
 }

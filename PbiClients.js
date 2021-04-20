@@ -1,7 +1,5 @@
-var requestHeadersCache = {};
-var sessionUrl = "";
-var pingUrl = "";
-var isArtificialPing = false;
+var isKeepingSessionAlive = false;
+
 
 function toggleModal(){
     var modal = document.querySelector(".PbiDevContainer")
@@ -19,7 +17,7 @@ function createModal(){
         root.insertAdjacentHTML('beforeend', html);
 
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
-        document.querySelector("#PbiDevPingToggle").onclick = toggleArtificialPing
+        document.querySelector("#PbiDevPingToggle").onclick = toggleKeepSessionAlive
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -52,33 +50,9 @@ function createModal(){
     });
 }
 
-function toggleArtificialPing(){
-    isArtificialPing = !document.querySelector("#PbiDevPingToggle").checked
-    url = (isArtificialPing ? sessionUrl : "")
-    chrome.runtime.sendMessage({"deleteSessionUrl":url})
-}
-
-function artificialPing(){
-    // Fake ping every 30 seconds to keep the session alive.
-    if(!isArtificialPing){
-        return;
-    }
-
-    _data = "{'reportVisible':'false','timeSinceLastInteractionMs':'0'}"
-    var _headers = {}
-    Object.assign(_headers, requestHeadersCache)
-    _headers["x-artificial-ping"]=true
-    $.ajax({
-        url : pingUrl,
-        method : 'POST',
-        headers: _headers,
-        data: _data,
-        contentType: "application/json",
-        error: function(request, status, error){
-            alert("Error attempting artificial ping: " + request.status.toString() + ":" + error)
-        }
-   })
-
+function toggleKeepSessionAlive(){
+    isKeepingSessionAlive = !document.querySelector("#PbiDevPingToggle").checked
+    chrome.runtime.sendMessage({"isKeepingSessionAlive":isKeepingSessionAlive})
 }
 
 function expireSession(){
@@ -190,23 +164,9 @@ function networkDispatcher(message, sender, sendResponse){
         });
         return;
     }
-    if(message.requestHeaders){
-        headers = message["requestHeaders"];
-        headers.forEach(pair => {
-            if (pair["name"] != "User-Agent"){
-                requestHeadersCache[pair["name"]]=pair["value"];
-            }
-        })
-        delete requestHeadersCache["sec-ch-ua"];
-        delete requestHeadersCache["sec-ch-ua-mobile"];
-        pingUrl = message["url"];
-        sessionUrl = pingUrl.replace("/ping", "");
-        return;
-    }
     if(message.timeSinceLastInteractionMs){
         updateSessionTimer(message["timeSinceLastInteractionMs"]);
     }
-
 
     if(!Array.isArray(message)){
         return;
@@ -235,7 +195,6 @@ function main() {
     chrome.runtime.onMessage.addListener(networkDispatcher);
     createDebugButton();
     createModal();
-    setInterval(artificialPing, 10000);
 }
 
 main();

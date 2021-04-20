@@ -12,6 +12,7 @@
 		}
 	},
 	"background": {
+		"all_farmes": true,
 		"scripts": ["./background.js","./jquery-2.2.0.min.js"],
 		"css":["./style.css"]
 	},
@@ -24,13 +25,10 @@
 	],
 	"permissions": [
 		"tabs",
+		"webNavigation",
 		"webRequest",
 		"webRequestBlocking",
 		"storage",
-		"*://*.powerbi.com/*",
-		"*://*.pbidedicated.windows.net/*",
-		"*://*.analysis.windows.net/*",
-		"*://*.dc.services.visualstudio.com/*",
 		"<all_urls>"
 	]
 }
