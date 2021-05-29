@@ -1,9 +1,14 @@
 var isKeepingSessionAlive = false;
 var sessionUrl = ""
 var bearerToken = ""
+var routingHint = ""
 
 function isPingUrl(url){
-    return /.*pbidedicated.windows.net.*ping/.test(url)
+    return /.*pbidedicated.window.*.net.*ping/.test(url)
+}
+
+function isPingUrl(url){
+    return /.*pbidedicated.window.*.net.*ping/.test(url)
 }
 
 function toggleModal(){
@@ -14,6 +19,16 @@ function toggleModal(){
     var display = modal.style.display
     display = (display == "none" ? "block" : "none");
     modal.style.display = display
+}
+
+function expireSession() {
+    chrome.runtime.sendMessage({
+        sessionUrl: sessionUrl,
+        bearerToken: bearerToken,
+        routingHint: routingHint,
+        expireSession: true
+    })
+    
 }
 
 function createModal(){
@@ -58,21 +73,6 @@ function createModal(){
 function toggleKeepSessionAlive(){
     isKeepingSessionAlive = !document.querySelector("#PbiDevPingToggle").checked
     chrome.runtime.sendMessage({"isKeepingSessionAlive":isKeepingSessionAlive})
-}
-
-function expireSession(){
-    console.log("deleting", sessionUrl)
-    $.ajax({
-        url : sessionUrl,
-        method : 'DELETE',
-        headers: {"Authorization": bearerToken},
-        error: function(request, status, error){
-            alert("Error while deleting session: " + request.status.toString())
-        },
-        success: function (data, text){
-            alert("Successfully deleted session.")
-        }
-   })
 }
 
 function enableDeleteSessionButton(){
@@ -181,10 +181,10 @@ function networkDispatcher(message, sender, sendResponse){
     if(message.requestHeaders){
         if (!sessionUrl && isPingUrl(message.url)){
             sessionUrl = message.url.replace("/ping","")
-            console.log(message)
             var auth = message.requestHeaders.find(header => header["name"] === "Authorization")
             bearerToken = auth["value"]
-            console.log(sessionUrl, bearerToken)
+            var xmsRoutingHint = message.requestHeaders.find(header => header["name"] === "x-ms-routing-hint")
+            routingHint = xmsRoutingHint["value"]
             enableDeleteSessionButton()
         }
     }

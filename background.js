@@ -1,3 +1,8 @@
+var isKeepingSessionAlive = false;
+var sessionUrl = ""
+var bearerToken = ""
+var routingHint = ""
+
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
 }
@@ -18,21 +23,33 @@ function addHeadersReceivedListener(){
 	}, {
 		urls: [
 			"*://*.pbidedicated.windows.net/*/ping", // ping (hostmode)
+			"*://*.pbidedicated.windows-int.net/*/ping", // ping (hostmode)
 		  "*://*.analysis.windows.net/*/session", // session (raid)
+		  "*://*.analysis-df.windows.net/*/session", // session (raid)
 		]}, ["responseHeaders"]);
 }
 
-chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
-  if (requestHeaders["method"] != "POST"){
-    return;
-  }
-  chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
+function addBeforeSendHeadersListener(){
+  /**
+   * For caching bearer token, ping url. 
+   */
+  chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
 
-},
-{urls: [
-  "*://*.pbidedicated.windows.net/*/ping",
-  "*://*.powerbi.com/*"
-]}, ["requestHeaders"])
+    if (requestHeaders.tabId == -1){
+      //case of this script making a GET call
+      return;
+    }
+    chrome.tabs.sendMessage(requestHeaders.tabId, requestHeaders);
+  
+  },
+  {urls: [
+    "*://*.pbidedicated.windows.net/*/ping",
+    "*://*.pbidedicated.windows-int.net/*/ping",
+    "*://*.analysis-df.windows.net/*",
+    "*://*.analysis.windows.net/*",
+    "*://*.powerbi.com/*"
+  ]}, ["requestHeaders"]);
+}
 
 function addBeforeRequestListener(){
   /**
@@ -53,6 +70,7 @@ function addBeforeRequestListener(){
   {
     urls: [
       "*://*.pbidedicated.windows.net/*",
+      "*://*.pbidedicated.windows-int.net/*",
       "*://*.dc.services.visualstudio.com/v2/track"
     ]}, ["requestBody"])
 }
@@ -82,8 +100,16 @@ function addTabUpdateListener(){
     startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })
-
 	});
+}
+
+function expireSession(request){
+  const response = fetch(request.sessionUrl, {
+    method: 'DELETE',
+    headers: {
+       'Authorization': request.bearerToken,
+       'x-ms-routing-hint': request.routingHint
+    }});
 }
 
 function addContentListener(){
@@ -92,6 +118,9 @@ function addContentListener(){
       if (request.isKeepingSessionAlive){
         //Mirror it back so that it gets sent to the iframe
         chrome.tabs.sendMessage(sender.tab.id, request);
+      }
+      if (request.sessionUrl){
+        expireSession(request);
       }
     }
   );
@@ -150,6 +179,7 @@ function addBrowserActionListener(){
 
 function main() {
   addBrowserActionListener();
+  addBeforeSendHeadersListener();
   addHeadersReceivedListener();
   addBeforeRequestListener();
   addContentListener();
@@ -167,5 +197,4 @@ TODO:
 - auth into adhoc accounts 
 - fix edog raid
 - train
-- fix activities json loading in multiple times
 */
