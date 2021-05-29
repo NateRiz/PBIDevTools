@@ -1,7 +1,13 @@
-var isKeepingSessionAlive = false;
-var sessionUrl = ""
-var bearerToken = ""
-var routingHint = ""
+
+if (haveVaraiablesBeenInitiated === undefined){
+    var haveVaraiablesBeenInitiated = true
+    var isKeepingSessionAlive = false;
+    var sessionUrl = ""
+    var bearerToken = ""
+    var routingHint = ""
+    var apiBaseUrl = ""
+    var lastExportID = ""
+}
 
 function isPingUrl(url){
     return /.*pbidedicated.window.*.net.*ping/.test(url)
@@ -38,6 +44,22 @@ function createModal(){
 
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
         document.querySelector("#PbiDevPingToggle").onclick = toggleKeepSessionAlive
+        document.querySelector("#PbiDevAPIExport").onclick = APIExport
+        document.querySelector("#PbiDevAPIGetStatus").onclick = APIGetStatus
+        document.querySelector("#PbiDevAPISave").onclick = APISave
+
+        var apiUrls = {
+            "msit.powerbi.com":"https://api.powerbi.com",
+            "dxt.powerbi.com":"https://dxtapi.powerbi.com",
+            "powerbi-df.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "powerbi-wow-int3.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "daily.powerbi.com":"https://dailyapi.powerbi.com"
+        }
+        var domain = window.location.hostname
+        if (domain in apiUrls){
+            apiBaseUrl = apiUrls[domain]
+        }
+        document.querySelector("#PbiDevAPIUrl").textContent = (isExportAPIEnabled() ? apiBaseUrl : "Ring not supported.")
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -68,6 +90,49 @@ function createModal(){
         })
 
     });
+}
+
+function isExportAPIEnabled(){
+    return apiBaseUrl !== ""
+}
+
+function APIExport(){
+    if (!isExportAPIEnabled()){
+        return;
+    }
+    var statusCode = -1
+    var statusCodeLabel = document.querySelector("#PbiDevAPIStatusCode")
+    var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
+    var resultTextArea = document.querySelector("#PbiDevAPIResult")
+    var body = document.querySelector("#PbiDevAPIBody").value
+
+    var url = window.location.href
+    var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
+    var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
+    var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exportTo`
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Authorization': bearerToken,'Content-Type': 'application/json'},
+        body: body
+    }).then((response) => {
+        statusCode = response.status
+        requestIdLabel.textContent = response.headers.get('requestid')
+        statusCodeLabel.textContent = response.status
+        return response.json()
+    }).then((data) =>{
+        resultTextArea.value = JSON.stringify(data, null, 4)
+        if (statusCode == 202){
+            lastExportID = resultTextArea["id"]
+        }
+    })
+}
+
+function APIGetStatus(){
+    console.log("APIGetStatus")
+}
+
+function APISave(){
+    console.log("APISave")
 }
 
 function toggleKeepSessionAlive(){
@@ -209,7 +274,6 @@ function networkDispatcher(message, sender, sendResponse){
         }
     })
 } 
-
 
 function main() {
     if (isAlreadyInjected() || !isPageLoaded()){

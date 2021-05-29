@@ -136,15 +136,33 @@
     <br>
     <div class="PbiDevCategoryTitle">ExportTo API</div>
     <div class="PbiDevCategory">
+      <div class="PbiDevDebugPair">
+        <span>API Url:</span>
+        <div id="PbiDevAPIUrl" class="PbiDevDebugResult">
+          <div>Loading...</div>
+        </div>
+      </div>
       <div class="PbiDevDebugPair"><span>Body:</span></div>
-      <textarea class="PbiDevTextArea" rows="4">{&#10    "format" : "PDF"&#10}</textarea>
+      <textarea id="PbiDevAPIBody" class="PbiDevTextArea" rows="4">{&#10    "format" : "PDF"&#10}</textarea>
       <div class="PbiDevCenter">
-        <button class="PbiDevButton" type="button">Export</button>
-        <button class="PbiDevButton" type="button">Get Status</button>
-        <button class="PbiDevButton" type="button">Save</button>
+        <button id="PbiDevAPIExport" class="PbiDevButton" type="button">Export</button>
+        <button id="PbiDevAPIGetStatus" class="PbiDevButton" type="button">Get Status</button>
+        <button id="PbiDevAPISave" class="PbiDevButton" type="button">Save</button>
+      </div>
+      <div class="PbiDevDebugPair">
+        <span>Status Code:</span>
+        <div id="PbiDevAPIStatusCode" class="PbiDevDebugResult">
+          <div>[Export first to view.]</div>
+        </div>
+      </div>
+      <div class="PbiDevDebugPair">
+        <span>RequestId:</span>
+        <div id="PbiDevAPIRequestId" class="PbiDevDebugResult">
+          <div>[Export first to view.]</div>
+        </div>
       </div>
       <div class="PbiDevDebugPair"><span>Result:</span></div>
-      <textarea class="PbiDevTextArea" rows="4" readonly>Result of the export will update here.</textarea>
+      <textarea id="PbiDevAPIResult" class="PbiDevTextArea" rows="4" readonly>Result of the export will update here.</textarea>
     </div>
 
   </div>
