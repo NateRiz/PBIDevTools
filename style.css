@@ -2,11 +2,12 @@
     color: #808080;
     font-size: 16px;
     text-align: right;
+    margin: 8px 0px;
 }
   
 .PbiDevDebugInfo{
     font-size: 14px;
-    padding: 8px;
+    padding-bottom: 8px;
     white-space:nowrap;
 }
 
@@ -15,12 +16,29 @@
 }
 
 .PbiDevContainer{
-    width: 425px !important;
+    background-color: #eaeaea;
     display: block;
+    padding: 8px;
+    width: 425px !important;
+}
+
+.PbiDevCategory{
+    background-color: #f3f2f1;
+    padding: 2px;
+}
+
+.PbiDevCategoryTitle{
+    font-size: 16px;
 }
 
 .PbiDevDebugResult{
     float: right;
+}
+
+.PbiDevTextArea{
+    display: block;
+    width: 80%;
+    margin: 0px auto 8px auto;
 }
 
 .PbiDevCenter{

@@ -4,125 +4,147 @@
   </h1>
   <div class="PbiDevDebugInfo">
 
-    <div class="PbiDevDebugPair">
-      Session RAID:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevRaid">
-          Loading...
+    <div class="PbiDevCategoryTitle">Render Information</div>
+    <div class="PbiDevCategory">
+      <div class="PbiDevDebugPair">
+        <span>Session RAID:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevRaid">
+            Loading...
+          </span>
+          <img id="PbiDevRaidCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>Cluster:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevCluster">
+            Loading...
+          </span>
+          <img id="PbiDevClusterCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>CapacityId:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevCapacity">
+            Loading...
+          </span>
+          <img id="PbiDevCapacityCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>SessionId:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevSession">
+            Loading...
+          </span>
+          <img id="PbiDevSessionCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>UserObjectId:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevUser">
+            Loading...
+          </span>
+          <img id="PbiDevUserCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>TenantId:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevTenant">
+            Loading...
+          </span>
+          <img id="PbiDevTenantCopy" class="PbiDevCopy">
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>ReportViewer Version:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevReportViewer">
+            Loading...
+          </span>
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>HostMode:</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevHostMode">
+            Loading...
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <div class="PbiDevCategoryTitle">Session</div>
+    <div class="PbiDevCategory">
+      <div class="PbiDevDebugPair">
+        <span>Session TTL (Foreground):</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevTTLFG">
+            10:00
+          </span>
+        </div>
+      </div>
+
+      <div class="PbiDevDebugPair">
+        <span>Session TTL (Background):</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevTTLBG">
+            60:00
+          </span>
+        </div>
+      </div>
+
+      <div class="PbiDevCenter">
+        <button class="PbiDevButton" id="PbiDevExpireNow" disabled type="button">Delete Session</button>
+        <img id="DeleteSessionInfo" class="PbiDevInfo">
+        <span id="DeleteSessionInfoTooltip" class="PbiDevInfoTooltip">
+          * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died.
+          Disabled until first ping occurs.
+          <br>
+          <br>
         </span>
-        <img id="PbiDevRaidCopy" class="PbiDevCopy">
       </div>
-    </div>
 
-    <div class="PbiDevDebugPair">
-      Cluster:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevCluster">
-          Loading...
-        </span>
-        <img id="PbiDevClusterCopy" class="PbiDevCopy">
+      <div class="PbiDevDebugPair">
+        <span>Allow Session Expiration:</span>
+        <img id="SessionExpireInfo" class="PbiDevInfo">
+        <div class="PbiDevDebugResult">
+          <input id="PbiDevPingToggle" type="checkbox" checked>
+        </div>
       </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      CapacityId:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevCapacity">
-          Loading...
-        </span>
-        <img id="PbiDevCapacityCopy" class="PbiDevCopy">
-      </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      SessionId:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevSession">
-          Loading...
-        </span>
-        <img id="PbiDevSessionCopy" class="PbiDevCopy">
-      </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      UserObjectId:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevUser">
-          Loading...
-        </span>
-        <img id="PbiDevUserCopy" class="PbiDevCopy">
-      </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      TenantId:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevTenant">
-          Loading...
-        </span>
-        <img id="PbiDevTenantCopy" class="PbiDevCopy">
-      </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      ReportViewer Version:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevReportViewer">
-          Loading...
+      <div>
+        <span id="SessionExpireInfoTooltip" class="PbiDevInfoTooltip">
+          * If disabled, sends keydown events every 30 seconds to Anaheim to keep the session alive.
+          <br>
+          <br>
         </span>
       </div>
     </div>
 
-    <div class="PbiDevDebugPair">
-      HostMode:
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevHostMode">
-          Loading...
-        </span>
+    <br>
+    <div class="PbiDevCategoryTitle">ExportTo API</div>
+    <div class="PbiDevCategory">
+      <div class="PbiDevDebugPair"><span>Body:</span></div>
+      <textarea class="PbiDevTextArea" rows="4">{&#10    "format" : "PDF"&#10}</textarea>
+      <div class="PbiDevCenter">
+        <button class="PbiDevButton" type="button">Export</button>
+        <button class="PbiDevButton" type="button">Get Status</button>
+        <button class="PbiDevButton" type="button">Save</button>
       </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      Session TTL (Foreground):
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevTTLFG">
-          10:00
-        </span>
-      </div>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      Session TTL (Background):
-      <div class="PbiDevDebugResult">
-        <span id="PbiDevTTLBG">
-          60:00
-        </span>
-      </div>
-    </div>
-
-    <div class="PbiDevCenter">
-      <button class="PbiDevButton" id="PbiDevExpireNow" disabled type="button">Delete Session</button>
-      <img id="DeleteSessionInfo" class="PbiDevInfo">
-      <span id="DeleteSessionInfoTooltip" class="PbiDevInfoTooltip">
-        * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died. Disabled until first ping occurs.
-        <br>
-        <br>
-      </span>
-    </div>
-
-    <div class="PbiDevDebugPair">
-      Allow Session Expiration:
-      <img id="SessionExpireInfo" class="PbiDevInfo">
-      <div class="PbiDevDebugResult">
-        <input id="PbiDevPingToggle" type="checkbox" checked>
-      </div>
-    </div>
-    <div>
-      <span id="SessionExpireInfoTooltip" class="PbiDevInfoTooltip">
-        * If disabled, sends keydown events every 30 seconds to Anaheim to keep the session alive.
-        <br>
-        <br>
-      </span>
+      <div class="PbiDevDebugPair"><span>Result:</span></div>
+      <textarea class="PbiDevTextArea" rows="4" readonly>Result of the export will update here.</textarea>
     </div>
 
   </div>
