@@ -106,11 +106,11 @@ function APIExport(){
     var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
     var resultTextArea = document.querySelector("#PbiDevAPIResult")
     var body = document.querySelector("#PbiDevAPIBody").value
-
     var url = window.location.href
     var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
     var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
     var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exportTo`
+
     fetch(apiUrl, {
         method: 'POST',
         headers: {'Authorization': bearerToken,'Content-Type': 'application/json'},
@@ -138,11 +138,11 @@ function APIGetStatus(){
     var exportStatusLabel = document.querySelector("#PbiDevAPIExportStatus")
     var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
     var resultTextArea = document.querySelector("#PbiDevAPIResult")
-
     var url = window.location.href
     var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
     var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
     var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exports/${lastExportID}`
+
     fetch(apiUrl, {
         method: 'GET',
         headers: {'Authorization': bearerToken}
@@ -160,7 +160,29 @@ function APIGetStatus(){
 }
 
 function APISave(){
-    console.log("APISave")
+    if (!isExportAPIEnabled() || lastExportID === ""){
+        return;
+    }
+    var statusCode = -1
+    var statusCodeLabel = document.querySelector("#PbiDevAPIStatusCode")
+    var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
+    var url = window.location.href
+    var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
+    var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
+    var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exports/${lastExportID}/file`
+
+    fetch(apiUrl, {
+        method: 'GET',
+        headers: {'Authorization': bearerToken}
+    }).then((response) => {
+        statusCode = response.status
+        requestIdLabel.textContent = response.headers.get('requestid')
+        statusCodeLabel.textContent = response.status
+        return response.blob()
+    }).then((blob) => { 
+        var file = window.URL.createObjectURL(blob)
+        window.location.assign(file)
+    })
 }
 
 function toggleKeepSessionAlive(){
