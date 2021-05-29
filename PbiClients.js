@@ -102,6 +102,7 @@ function APIExport(){
     }
     var statusCode = -1
     var statusCodeLabel = document.querySelector("#PbiDevAPIStatusCode")
+    var exportStatusLabel = document.querySelector("#PbiDevAPIExportStatus")
     var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
     var resultTextArea = document.querySelector("#PbiDevAPIResult")
     var body = document.querySelector("#PbiDevAPIBody").value
@@ -119,16 +120,43 @@ function APIExport(){
         requestIdLabel.textContent = response.headers.get('requestid')
         statusCodeLabel.textContent = response.status
         return response.json()
-    }).then((data) =>{
+    }).then((data) => {
         resultTextArea.value = JSON.stringify(data, null, 4)
         if (statusCode == 202){
-            lastExportID = resultTextArea["id"]
+            lastExportID = data["id"]
+            exportStatusLabel.textContent = data["status"]
         }
     })
 }
 
 function APIGetStatus(){
-    console.log("APIGetStatus")
+    if (!isExportAPIEnabled() || lastExportID === ""){
+        return;
+    }
+    var statusCode = -1
+    var statusCodeLabel = document.querySelector("#PbiDevAPIStatusCode")
+    var exportStatusLabel = document.querySelector("#PbiDevAPIExportStatus")
+    var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
+    var resultTextArea = document.querySelector("#PbiDevAPIResult")
+
+    var url = window.location.href
+    var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
+    var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
+    var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exports/${lastExportID}`
+    fetch(apiUrl, {
+        method: 'GET',
+        headers: {'Authorization': bearerToken}
+    }).then((response) => {
+        statusCode = response.status
+        requestIdLabel.textContent = response.headers.get('requestid')
+        statusCodeLabel.textContent = response.status
+        return response.json()
+    }).then((data) => {
+        resultTextArea.value = JSON.stringify(data, null, 4)
+        if (statusCode == 200 || statusCode == 202){
+            exportStatusLabel.textContent = data["status"]
+        }
+    })
 }
 
 function APISave(){
