@@ -2,12 +2,14 @@
 if (haveVaraiablesBeenInitiated === undefined){
     var haveVaraiablesBeenInitiated = true
     var isKeepingSessionAlive = false;
+    var clusterUrl = ""
     var sessionUrl = ""
     var rootActivityId = ""
     var bearerToken = ""
     var routingHint = ""
     var apiBaseUrl = ""
     var lastExportID = ""
+    var lastExportFilename = ""
 }
 
 function isPingUrl(url){
@@ -48,6 +50,7 @@ function createModal(){
         document.querySelector("#PbiDevAPIExport").onclick = APIExport
         document.querySelector("#PbiDevAPIGetStatus").onclick = APIGetStatus
         document.querySelector("#PbiDevAPISave").onclick = APISave
+        document.querySelector("#PbiDevDownloadRdl").onclick = downloadRdl
 
         var apiUrls = {
             "msit.powerbi.com":"https://api.powerbi.com",
@@ -92,6 +95,7 @@ function createModal(){
             }
         })
 
+
     });
 }
 
@@ -103,6 +107,28 @@ function copyToClipboard(text) {
     document.execCommand("copy");
     textArea.remove();
 }
+
+function download(filename, text, type="text/plain") {
+    // Create an invisible A element
+    const a = document.createElement("a");
+    a.style.display = "none";
+    document.body.appendChild(a);
+  
+    // Set the HREF to a Blob representation of the data to be downloaded
+    a.href = window.URL.createObjectURL(
+      new Blob([text], { type })
+    );
+  
+    // Use download attribute to set set desired file name
+    a.setAttribute("download", filename);
+  
+    // Trigger the download by simulating click
+    a.click();
+  
+    // Cleanup
+    window.URL.revokeObjectURL(a.href);
+    document.body.removeChild(a);
+  }
 
 function getKustoQuery(){
     if(rootActivityId === undefined){
@@ -135,7 +161,7 @@ function isExportAPIEnabled(){
 }
 
 function APIExport(){
-    if (!isExportAPIEnabled()){
+    if (!isExportAPIEnabled() && bearerToken){
         return;
     }
     var statusCode = -1
@@ -192,6 +218,7 @@ function APIGetStatus(){
     }).then((data) => {
         resultTextArea.value = JSON.stringify(data, null, 4)
         if (statusCode == 200 || statusCode == 202){
+            lastExportFilename = data["reportName"] + data["resourceFileExtension"]
             exportStatusLabel.textContent = data["status"]
         }
     })
@@ -201,13 +228,15 @@ function APISave(){
     if (!isExportAPIEnabled() || lastExportID === ""){
         return;
     }
-    var statusCode = -1
     var statusCodeLabel = document.querySelector("#PbiDevAPIStatusCode")
     var requestIdLabel = document.querySelector("#PbiDevAPIRequestId")
     var url = window.location.href
     var groupId = url.match(/groups\/(.*)\/rdlreports/)[1]
     var reportId = url.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
     var apiUrl = `${apiBaseUrl}/v1.0/myorg/groups/${groupId}/reports/${reportId}/exports/${lastExportID}/file`
+
+    //Update the filename
+    APIGetStatus()
 
     fetch(apiUrl, {
         method: 'GET',
@@ -218,8 +247,24 @@ function APISave(){
         statusCodeLabel.textContent = response.status
         return response.blob()
     }).then((blob) => { 
-        var file = window.URL.createObjectURL(blob)
-        window.location.assign(file)
+        var filename = lastExportFilename ? lastExportFilename : 'Download'
+        download(filename, blob, "application/json")
+    })
+}
+
+function downloadRdl(){
+    if (!clusterUrl || !bearerToken){
+        return
+    }
+    var reportId = window.location.href.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
+    var url = `https://${clusterUrl}/export/reports/${reportId}/rdl`
+    fetch(url, {
+        method: 'GET',
+        headers: {'Authorization': bearerToken}
+    }).then((response) => {
+        return response.text()
+    }).then((data) => { 
+        download("Download.rdl", data)
     })
 }
 
@@ -327,6 +372,7 @@ function networkDispatcher(message, sender, sendResponse){
             if (header["name"] in textIds){
                 if (header["name"] == 'requestid'){
                     rootActivityId = header['value']
+                    clusterUrl = new URL(message.url).hostname
                 }
                 updateToolbarResult(textIds[header["name"]], header["value"])
             }

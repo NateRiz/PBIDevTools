@@ -189,7 +189,6 @@ function main() {
 main()
 /*
 TODO:
-- copy to kusto query
 - feature switches
 - autofill TSG
 - private chrome extensions
