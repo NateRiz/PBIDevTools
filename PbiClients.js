@@ -3,6 +3,7 @@ if (haveVaraiablesBeenInitiated === undefined){
     var haveVaraiablesBeenInitiated = true
     var isKeepingSessionAlive = false;
     var sessionUrl = ""
+    var rootActivityId = ""
     var bearerToken = ""
     var routingHint = ""
     var apiBaseUrl = ""
@@ -53,6 +54,7 @@ function createModal(){
             "dxt.powerbi.com":"https://dxtapi.powerbi.com",
             "powerbi-df.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
             "powerbi-wow-int3.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "powerbi-idog.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
             "daily.powerbi.com":"https://dailyapi.powerbi.com"
         }
         var domain = window.location.hostname
@@ -67,14 +69,15 @@ function createModal(){
             image.onclick = function(){
                 var siblingId = image.id.replace("Copy","")
                 var text = document.querySelector("#" + siblingId)
-                var textArea = document.createElement("textarea");
-                textArea.value = text.textContent;
-                document.body.appendChild(textArea);
-                textArea.select()
-                document.execCommand("copy")
-                textArea.remove();
+                copyToClipboard(text.textContent);
             }
         })
+
+        var kustoButton = document.querySelector("#PbiDevKustoCopy")
+        kustoButton.src = chrome.runtime.getURL("./kusto.png")
+        kustoButton.onclick = () => {
+            copyToClipboard(getKustoQuery())
+        }
 
         var sessionExpireInfo = document.querySelectorAll(".PbiDevInfo")
         sessionExpireInfo.forEach((img)=>{
@@ -90,6 +93,41 @@ function createModal(){
         })
 
     });
+}
+
+function copyToClipboard(text) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    textArea.remove();
+}
+
+function getKustoQuery(){
+    if(rootActivityId === undefined){
+        return;
+    }
+    var domain = window.location.hostname
+    var isTestRing = domain.includes("analysis")
+    var preprod = isTestRing ? "pre" : ""
+    var database = isTestRing ? "BIAzureKustoPPE" : "BIAzureKustoProd"
+    return `cluster('Biazure').database('${database}').TraceUnionProd
+    | where TIMESTAMP > ago(1d)
+    | where RootActivityId == "${rootActivityId}"
+    
+    cluster('Biazure').database('${database}').ASTraceUnionProd
+    | where TIMESTAMP >ago(1d)
+    | where ParentActivityId == "${rootActivityId}"
+    
+    cluster('Biazure').database('${database}').pbi_web_${preprod}prod("customEvents")
+    | where timestamp > ago(1d)
+    | extend c = parsejson(customDimensions)
+    | where c.rid == "${rootActivityId}"
+    
+    cluster('Biazure').database('${database}').RdlClientOpen
+    | where timestamp > ago(1d)
+    | where rId == "${rootActivityId}"`.replace(/  +/g, '')
 }
 
 function isExportAPIEnabled(){
@@ -287,6 +325,9 @@ function networkDispatcher(message, sender, sendResponse){
                 return;
             }
             if (header["name"] in textIds){
+                if (header["name"] == 'requestid'){
+                    rootActivityId = header['value']
+                }
                 updateToolbarResult(textIds[header["name"]], header["value"])
             }
         });

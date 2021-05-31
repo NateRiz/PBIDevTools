@@ -19,6 +19,7 @@
 	"web_accessible_resources": [
 		"debug16.png",
 		"copy.png",
+		"kusto.png",
 		"info.png",
 		"activities.json",
 		"debugWindow.html"
