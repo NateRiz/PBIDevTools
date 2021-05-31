@@ -192,7 +192,6 @@ TODO:
 - copy to kusto query
 - feature switches
 - autofill TSG
-- exportTo
 - private chrome extensions
 - auth into adhoc accounts 
 - fix edog raid

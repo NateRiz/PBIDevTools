@@ -1,5 +1,9 @@
-var activityTypes = {}
-var isActivityTypeTooltipsEnabled = false
+if (isPageLoaded === undefined)
+{
+    var isPageLoaded = false
+    var activityTypes = {}
+    var isActivityTypeTooltipsEnabled = false
+}
 
 function injectTooltip(node, activityType){
     var span = document.createElement("span");
@@ -52,6 +56,7 @@ function main(){
     .then(() => checkForActivityTypes())
 }
 
-if (document.readyState === "complete") {
+if (!isPageLoaded && document.readyState === "complete") {
+    isPageLoaded = true
     main();
 }
