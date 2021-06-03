@@ -1,9 +1,5 @@
 var isKeepingSessionAlive = false;
 
-function isAnaheimIframe(){
-    return document.querySelector("#AnaheimHost") !== null
-}
-
 function keepSessionAlive(){
     if(!isKeepingSessionAlive){
         return;
@@ -15,6 +11,7 @@ function keepSessionAlive(){
             cancelable: true,
         }
     )
+    console.log("ping...")
     document.querySelector("#AnaheimHost").dispatchEvent(keyboardEvent);
 }
 
@@ -25,9 +22,7 @@ function backgroundListener(message, sender, sendResponse){
 }
 
 function main(){
-    if(!isAnaheimIframe){
-        return
-    }
+    console.log("ttttttt")
     chrome.runtime.onMessage.addListener(backgroundListener);
     setInterval(keepSessionAlive, 30000);
 }
