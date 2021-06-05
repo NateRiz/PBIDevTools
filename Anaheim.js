@@ -11,7 +11,7 @@ function keepSessionAlive(){
             cancelable: true,
         }
     )
-    document.querySelector("#AnaheimHost").dispatchEvent(keyboardEvent);
+    document.querySelector("#AnaheimHost")?.dispatchEvent(keyboardEvent);
 }
 
 function backgroundListener(message, sender, sendResponse){
