@@ -11,7 +11,6 @@ function keepSessionAlive(){
             cancelable: true,
         }
     )
-    console.log("ping...")
     document.querySelector("#AnaheimHost").dispatchEvent(keyboardEvent);
 }
 
@@ -22,10 +21,8 @@ function backgroundListener(message, sender, sendResponse){
 }
 
 function main(){
-    console.log("ttttttt")
     chrome.runtime.onMessage.addListener(backgroundListener);
     setInterval(keepSessionAlive, 30000);
 }
-
 
 main()
