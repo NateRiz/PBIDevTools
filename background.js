@@ -57,6 +57,11 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
+    if((/index\..*\.js/).test(request.url)){
+      console.log("redirecting")
+      return {redirectUrl: "https://localhost:4200/index.js"}
+    }
+
     if (request["method"] != "POST"){
       return;
     }
@@ -72,8 +77,9 @@ function addBeforeRequestListener(){
     urls: [
       "*://*.pbidedicated.windows.net/*",
       "*://*.pbidedicated.windows-int.net/*",
-      "*://*.dc.services.visualstudio.com/v2/track"
-    ]}, ["requestBody"])
+      "*://*.dc.services.visualstudio.com/v2/track",
+      "*://*.content.powerapps.com/*" // Redirecting Anaheim cdn
+    ]}, ["requestBody", "blocking"])
 }
 
 function addTabUpdateListener(){
@@ -89,6 +95,8 @@ function addTabUpdateListener(){
     if (!isPbiReportUrl(tab.url)) {
       return
     }
+
+    startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
 
     chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
       frames.forEach((frame)=>{
@@ -140,7 +148,6 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
     if(!isFeatureEnabled){
       return
     }
-    console.log(">",featureName, _isFeatureEnabled)
     scriptPath = scriptFilePaths.shift()
     chrome.tabs.executeScript(tabId, {'file': scriptPath, 'frameId': frameId}, () => {
       if (scriptFilePaths.length){
@@ -160,7 +167,6 @@ function getFeatureStatusFromStorage(featureName, callback){
    */
   chrome.storage.sync.get([featureName], function(data){
     var isFeatureEnabled = !(data[featureName] === false)
-    console.log(featureName, data[featureName])
     callback(isFeatureEnabled)
   });
 }
