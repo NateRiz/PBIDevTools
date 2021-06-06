@@ -2,6 +2,7 @@ var isKeepingSessionAlive = false;
 var sessionUrl = ""
 var bearerToken = ""
 var routingHint = ""
+var useLocalAnaheim = false
 
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
@@ -136,7 +137,7 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
    * @param {function} callback optional callback to run after all scripts execute
    * @param {boolean} bypass if there are multiple scripts, bypass checking feature status multiple times
    */
-  let func = ()=>{
+  let func = (_isFeatureEnabled)=>{
     scriptPath = scriptFilePaths.shift()
     chrome.tabs.executeScript(tabId, {'file': scriptPath, 'frameId': frameId}, () => {
       if (scriptFilePaths.length){
@@ -156,15 +157,12 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
 
 function getFeatureStatusFromStorage(featureName, callback){
   /**
-   * Gets features from chrome cloud storage and executes callback only if enabled.
+   * Gets features from chrome cloud storage and executes callback with the result.
    * featureNames are assumed to be enabled unless explicitly false. (even undefined/null is enabled)
    */
   chrome.storage.sync.get([featureName], function(data){
     var isFeatureEnabled = !(data[featureName] === false)
-    if (isFeatureEnabled){
-      callback()
-    }
-    return isFeatureEnabled;
+    callback(isFeatureEnabled)
   });
 }
 
@@ -178,6 +176,7 @@ function addBrowserActionListener(){
 }
 
 function main() {
+  getFeatureStatusFromStorage("UseLocalAnaheim", (isFeatureEnabled) => {useLocalAnaheim = isFeatureEnabled;})
   addBrowserActionListener();
   addBeforeSendHeadersListener();
   addHeadersReceivedListener();
