@@ -127,7 +127,7 @@ function addContentListener(){
   );
 }
 
-function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, callback=()=>{}, bypass=false){
+function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, callback=()=>{}){
   /**
    * Recursively executes all scripts passed in if the feature is enabled. Scripts are executed in order
    * @param {string} featureName name of the feature that will get checked in chrome storage
@@ -135,24 +135,22 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
    * @param {number} tabId tab to execute in
    * @param {number} frameId optional frame to execute inside the tab. Default 0 is top level.
    * @param {function} callback optional callback to run after all scripts execute
-   * @param {boolean} bypass if there are multiple scripts, bypass checking feature status multiple times
    */
-  let func = (_isFeatureEnabled)=>{
+  let func = (isFeatureEnabled)=>{
+    if(!isFeatureEnabled){
+      return
+    }
+    console.log(">",featureName, _isFeatureEnabled)
     scriptPath = scriptFilePaths.shift()
     chrome.tabs.executeScript(tabId, {'file': scriptPath, 'frameId': frameId}, () => {
       if (scriptFilePaths.length){
-        startScriptExecution(featureName, scriptFilePaths,tabId, frameId, callback, true)
+        startScriptExecution(featureName, scriptFilePaths,tabId, frameId, callback)
       }else{
         callback()
       }
     });
   };
-
-  if(bypass){
-    func()
-  }else{
-    getFeatureStatusFromStorage(featureName, func)
-  }
+  getFeatureStatusFromStorage(featureName, func)
 }
 
 function getFeatureStatusFromStorage(featureName, callback){
@@ -162,6 +160,7 @@ function getFeatureStatusFromStorage(featureName, callback){
    */
   chrome.storage.sync.get([featureName], function(data){
     var isFeatureEnabled = !(data[featureName] === false)
+    console.log(featureName, data[featureName])
     callback(isFeatureEnabled)
   });
 }
