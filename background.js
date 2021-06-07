@@ -57,9 +57,10 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
-    if((/index\..*\.js/).test(request.url)){
-      console.log("redirecting")
-      return {redirectUrl: "https://localhost:4200/index.js"}
+    if(useLocalAnaheim){
+      if((/index\..*\.js/).test(request.url)){
+        return {redirectUrl: "https://localhost:4200/index.js"}
+      }
     }
 
     if (request["method"] != "POST"){
@@ -78,7 +79,7 @@ function addBeforeRequestListener(){
       "*://*.pbidedicated.windows.net/*",
       "*://*.pbidedicated.windows-int.net/*",
       "*://*.dc.services.visualstudio.com/v2/track",
-      "*://*.content.powerapps.com/*" // Redirecting Anaheim cdn
+      "*://*.content.powerapps.com/*", // Redirecting Anaheim cdn
     ]}, ["requestBody", "blocking"])
 }
 
