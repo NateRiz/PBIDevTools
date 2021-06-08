@@ -5,7 +5,8 @@ var routingHint = ""
 var useLocalAnaheim = false
 
 function isPbiReportUrl(url) {
-	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url)
+	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
+  /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url)
 }
 
 function isChromeLocalUrl(url) {

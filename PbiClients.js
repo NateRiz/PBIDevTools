@@ -16,10 +16,6 @@ function isPingUrl(url){
     return /.*pbidedicated.window.*.net.*ping/.test(url)
 }
 
-function isPingUrl(url){
-    return /.*pbidedicated.window.*.net.*ping/.test(url)
-}
-
 function toggleModal(){
     var modal = document.querySelector(".PbiDevContainer")
     if(!modal){
@@ -58,6 +54,7 @@ function createModal(){
             "powerbi-df.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
             "powerbi-wow-int3.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
             "powerbi-idog.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "portal.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
             "daily.powerbi.com":"https://dailyapi.powerbi.com"
         }
         var domain = window.location.hostname
