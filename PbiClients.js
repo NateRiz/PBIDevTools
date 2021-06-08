@@ -73,6 +73,8 @@ function createModal(){
             }
         })
 
+        document.querySelector("#PbiDevBearerTokenCopy").onclick = () => copyToClipboard(getBearerToken());
+
         var kustoButton = document.querySelector("#PbiDevKustoCopy")
         kustoButton.src = chrome.runtime.getURL("./kusto.png")
         kustoButton.onclick = () => {
@@ -94,6 +96,10 @@ function createModal(){
 
 
     });
+}
+
+function getBearerToken(){
+    return bearerToken;
 }
 
 function copyToClipboard(text) {
@@ -125,7 +131,7 @@ function download(filename, text, type="text/plain") {
     // Cleanup
     window.URL.revokeObjectURL(a.href);
     document.body.removeChild(a);
-  }
+}
 
 function getKustoQuery(){
     if(rootActivityId === undefined){
@@ -382,6 +388,7 @@ function networkDispatcher(message, sender, sendResponse){
             sessionUrl = message.url.replace("/ping","")
             var auth = message.requestHeaders.find(header => header["name"] === "Authorization")
             bearerToken = auth["value"]
+            updateToolbarResult("PbiDevBearerToken", `${bearerToken.slice(0, 15)}...${bearerToken.slice(-5)}`)
             var xmsRoutingHint = message.requestHeaders.find(header => header["name"] === "x-ms-routing-hint")
             routingHint = xmsRoutingHint["value"]
             enableDeleteSessionButton()
