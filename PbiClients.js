@@ -3,7 +3,7 @@ if (haveVaraiablesBeenInitiated === undefined){
     var haveVaraiablesBeenInitiated = true
     var isKeepingSessionAlive = false;
     var clusterUrl = ""
-    var sessionUrl = ""
+    var rdlWorkloadUrl = ""
     var rootActivityId = ""
     var bearerToken = ""
     var routingHint = ""
@@ -28,7 +28,7 @@ function toggleModal(){
 
 function expireSession() {
     chrome.runtime.sendMessage({
-        sessionUrl: sessionUrl,
+        sessionUrl: rdlWorkloadUrl,
         bearerToken: bearerToken,
         routingHint: routingHint,
         expireSession: true
@@ -384,8 +384,8 @@ function networkDispatcher(message, sender, sendResponse){
     }
 
     if(message.requestHeaders){
-        if (!sessionUrl && isPingUrl(message.url)){
-            sessionUrl = message.url.replace("/ping","")
+        if (!rdlWorkloadUrl && isPingUrl(message.url)){
+            rdlWorkloadUrl = message.url.replace("/ping","")
             var auth = message.requestHeaders.find(header => header["name"] === "Authorization")
             bearerToken = auth["value"]
             updateToolbarResult("PbiDevBearerToken", `${bearerToken.slice(0, 15)}...${bearerToken.slice(-5)}`)
