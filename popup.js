@@ -4,9 +4,9 @@ function main(){
     isUseLocalAnaheimEnabled = false
 
     chrome.storage.sync.get(["DevToolbar", "ActivityTypeTooltips", "UseLocalAnaheim"], function(data){
-        isDevToolbarEnabled = !(data.DevToolbar===false)
-        isActivityTypeTooltipsEnabled = !(data.ActivityTypeTooltips===false)
-        isUseLocalAnaheimEnabled = !(data.UseLocalAnaheim===false)
+        isDevToolbarEnabled = (data.DevToolbar===true)
+        isActivityTypeTooltipsEnabled = (data.ActivityTypeTooltips===true)
+        isUseLocalAnaheimEnabled = (data.UseLocalAnaheim===true)
 
         devToolbarSlider = document.querySelector("#PbiDevDevToolbar")
         devToolbarSlider.checked = isDevToolbarEnabled

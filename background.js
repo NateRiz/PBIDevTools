@@ -108,7 +108,7 @@ function addTabUpdateListener(){
       })
     });
 
-    startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './PbiClients.js'], tabId, 0, ()=>{
+    startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })
 	});
@@ -165,10 +165,10 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
 function getFeatureStatusFromStorage(featureName, callback){
   /**
    * Gets features from chrome cloud storage and executes callback with the result.
-   * featureNames are assumed to be enabled unless explicitly false. (even undefined/null is enabled)
+   * featureNames are disabled unless explicitly true.
    */
   chrome.storage.sync.get([featureName], function(data){
-    var isFeatureEnabled = !(data[featureName] === false)
+    var isFeatureEnabled = (data[featureName] === true)
     callback(isFeatureEnabled)
   });
 }
@@ -182,6 +182,21 @@ function addBrowserActionListener(){
   });
 }
 
+function addOnInstallListener(){
+  chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+      chrome.storage.sync.get(["DevToolbar"], function(data){
+        if (data.DevToolbar !== undefined){
+          return;
+        }
+        chrome.storage.sync.set({"DevToolbar": true})
+        chrome.storage.sync.set({"ActivityTypeTooltips": false})
+        chrome.storage.sync.set({"UseLocalAnaheim": false})
+      })
+    }
+  });
+}
+
 function main() {
   getFeatureStatusFromStorage("UseLocalAnaheim", (isFeatureEnabled) => {useLocalAnaheim = isFeatureEnabled;})
   addBrowserActionListener();
@@ -190,6 +205,7 @@ function main() {
   addBeforeRequestListener();
   addContentListener();
   addTabUpdateListener();
+  addOnInstallListener();
 }
 
 main()

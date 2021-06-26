@@ -13,7 +13,7 @@
 	},
 	"background": {
 		"all_farmes": true,
-		"scripts": ["./background.js","./jquery-2.2.0.min.js"],
+		"scripts": ["./background.js","./jquery-2.2.0.min.js", "./exportApi.js"],
 		"css":["./style.css"]
 	},
 	"web_accessible_resources": [
