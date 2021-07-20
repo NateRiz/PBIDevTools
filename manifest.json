@@ -30,6 +30,7 @@
 		"webRequest",
 		"webRequestBlocking",
 		"storage",
+		"clipboardRead",
 		"<all_urls>"
 	]
 }
