@@ -1,5 +1,5 @@
-if (typeof isLocalAnaheimLoaded === 'undefined'){
-    isLocalAnaheimLoaded = false;
+if (typeof window.isLocalAnaheimLoaded === 'undefined'){
+    window.isLocalAnaheimLoaded = false;
 }
 
 function main(){
@@ -12,9 +12,9 @@ function main(){
     notice.style.textAlign = "center"
     notice.textContent = "== Using Anaheim From Localhost =="
     container.appendChild(notice)
+    isLocalAnaheimLoaded = true;
 }
 
-if (!isLocalAnaheimLoaded && document.readyState === "complete") {
-    isLocalAnaheimLoaded = true;
+if (!window.isLocalAnaheimLoaded && document.readyState === "complete"){
     main();
 }
