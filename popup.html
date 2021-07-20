@@ -12,7 +12,7 @@
         <span>PbiDevTools</span>
     </div>
     <div class="PbiDevFeatureContainer">
-        <div class="PbiDevFeaturePair">
+        <div class="PbiDevBox PbiDevFeaturePair">
             <span>Dev Toolbar</span>
             <span class="PbiDevFeatureResult">
                 <label class="switch">
@@ -21,18 +21,7 @@
                     </label>
             </span>
         </div>
-        <div class="PbiDevFeaturePair">
-            <span>Activity Type Tooltips</span>
-            <span class="PbiDevFeatureResult">
-                <span class="PbiDevFeatureResult">
-                    <label class="switch">
-                        <input id="PbiDevActivityType" type="checkbox">
-                        <span class="slider"></span>
-                        </label>
-                </span>
-            </span>
-        </div>
-        <div class="PbiDevFeaturePair">
+        <div class="PbiDevBox PbiDevFeaturePair">
             <span>Use Local Anaheim</span>
             <span class="PbiDevFeatureResult">
                 <span class="PbiDevFeatureResult">
@@ -42,6 +31,14 @@
                         </label>
                 </span>
             </span>
+        </div>
+        <div class=PbiDevBox>
+            <div class="PbiDevFeaturePair">
+                <span>Activity Type Lookup:</span>
+                <input id="PbiDevActivityTypeInput" class="PbiDevFeatureResult PbiDevInputUppercase" type="text" size="4" maxlength="4" placeholder = "RSCS">
+            </div>
+                <input id="PbiDevActivityTypeResult" class="PbiDevActivityType" readonly disabled placeholder="CreateSessionActivity">
+            <br>
         </div>
     </div>
 </body>

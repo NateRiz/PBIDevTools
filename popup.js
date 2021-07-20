@@ -1,18 +1,21 @@
 function main(){
-    isDevToolbarEnabled = false
-    isActivityTypeTooltipsEnabled = false
-    isUseLocalAnaheimEnabled = false
+    var isDevToolbarEnabled = false
+    var isUseLocalAnaheimEnabled = false
+    var activityTypes = {}
 
-    chrome.storage.sync.get(["DevToolbar", "ActivityTypeTooltips", "UseLocalAnaheim"], function(data){
+    fetch(chrome.extension.getURL('/activities.json'))
+    .then((resp) => resp.json())
+    .then(function (jsonData) {
+        console.log("LOADED")
+        activityTypes = jsonData
+    })
+
+    chrome.storage.sync.get(["DevToolbar", "UseLocalAnaheim"], function(data){
         isDevToolbarEnabled = (data.DevToolbar===true)
-        isActivityTypeTooltipsEnabled = (data.ActivityTypeTooltips===true)
         isUseLocalAnaheimEnabled = (data.UseLocalAnaheim===true)
 
         devToolbarSlider = document.querySelector("#PbiDevDevToolbar")
         devToolbarSlider.checked = isDevToolbarEnabled
-
-        activityTypeToolbarSlider = document.querySelector("#PbiDevActivityType")
-        activityTypeToolbarSlider.checked = isActivityTypeTooltipsEnabled
 
         localAnaheimToolbarSlider = document.querySelector("#PbiDevLocalAnaheim")
         localAnaheimToolbarSlider.checked = isUseLocalAnaheimEnabled
@@ -20,13 +23,23 @@ function main(){
         devToolbarSlider.onchange = function(){
             chrome.storage.sync.set({"DevToolbar": devToolbarSlider.checked})
         }
-        activityTypeToolbarSlider.onchange = function(){
-            chrome.storage.sync.set({"ActivityTypeTooltips": activityTypeToolbarSlider.checked})
-        }
         localAnaheimToolbarSlider.onchange = function(){
             chrome.storage.sync.set({"UseLocalAnaheim": localAnaheimToolbarSlider.checked})
         }
     })
+
+    var activityTypeInput = document.querySelector("#PbiDevActivityTypeInput")
+    var activityTypeResult = document.querySelector("#PbiDevActivityTypeResult")
+    if (activityTypeInput !== null && activityTypeResult !== null){
+        activityTypeInput.oninput = function () {
+            var activityType = activityTypeInput.value.toUpperCase()
+            if (activityType.length != 4){
+                return
+            }
+
+            activityTypeResult.value = (activityTypes[activityType] === undefined ? "Not Found" : activityTypes[activityType])
+        }
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) { 

@@ -1,6 +1,6 @@
 .PbiDevBody{
     min-width: 250px;
-    min-height: 150px;
+    min-height: 200px;
     background-color: #F3F2F1;
     margin: 0px;
 }
@@ -18,9 +18,22 @@
 }
 
 .PbiDevFeaturePair{
-    padding: 4px;
     margin-bottom: 2px;
-    background-color: #FFFFFF;
+}
+
+.PbiDevBox{
+  background-color: #FFFFFF;
+  padding: 4px;
+}
+
+.PbiDevActivityType{
+  border: none;
+  text-align: center;
+  width: 100%;
+}
+
+.PbiDevInputUppercase{
+    text-transform: uppercase;
 }
 
 .PbiDevTitleBar{

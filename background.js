@@ -86,13 +86,12 @@ function addBeforeRequestListener(){
 
 function addTabUpdateListener(){
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+
+    //Below here are all non Chrome://xyz urls
     if (isChromeLocalUrl(tab.url)){
       return
     }
 
-    //Below here are all non Chrome://xyz urls
-    startScriptExecution('ActivityTypeTooltips', ['./activityTypeParser.js'], tabId)
-    
     //Below here are only pbi reports
     if (!isPbiReportUrl(tab.url)) {
       return
@@ -190,7 +189,6 @@ function addOnInstallListener(){
           return;
         }
         chrome.storage.sync.set({"DevToolbar": true})
-        chrome.storage.sync.set({"ActivityTypeTooltips": false})
         chrome.storage.sync.set({"UseLocalAnaheim": false})
       })
     }
