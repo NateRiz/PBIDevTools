@@ -81,6 +81,9 @@ function addBeforeRequestListener(){
       "*://*.pbidedicated.windows-int.net/*",
       "*://*.dc.services.visualstudio.com/v2/track",
       "*://*.content.powerapps.com/*", // Redirecting Anaheim cdn
+      "*://*dailypaginated-reports.powerbi.com/index.*",
+      "*://*preprod.content.powerapps.com/resource/powerbianaheim/index.*",
+
     ]}, ["requestBody", "blocking"])
 }
 
