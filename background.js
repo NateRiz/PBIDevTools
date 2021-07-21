@@ -3,6 +3,7 @@ var sessionUrl = ""
 var bearerToken = ""
 var routingHint = ""
 var useLocalAnaheim = false
+var pingWorkerCdnUrl = ""
 
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
@@ -59,8 +60,13 @@ function addBeforeRequestListener(){
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
     if(useLocalAnaheim){
-      if((/index\..*\.js/).test(request.url)){
+      if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
+        getPingWorkerUrl(request)
         return {redirectUrl: "https://localhost:4200/index.js"}
+      }
+      if(/.*pingworker\.worker\.worker\.js/.test(request.url)){
+        var origin = new URL(request.url).origin
+        return {redirectUrl: `${origin}/${pingWorkerCdnUrl}`}
       }
     }
 
@@ -89,7 +95,6 @@ function addBeforeRequestListener(){
 function addOnErrorOccurredListener(){
   chrome.webRequest.onErrorOccurred.addListener(function(response){
     message = {"LocalAnaheimError": response.error}
-    console.log("error, sending to tab", response.tabId, message)
     chrome.tabs.sendMessage(response.tabId, message);
   },
   {
@@ -134,6 +139,16 @@ function expireSession(request){
        'Authorization': request.bearerToken,
        'x-ms-routing-hint': request.routingHint
     }});
+}
+
+function getPingWorkerUrl(request){
+  fetch(request.url, {
+    method: 'GET',
+  }).then((response) => response.text())
+  .then((response) => {
+    var res = response.match(/(pingworker\.worker\.[a-zA-Z0-9]*\.worker\.js)/)
+    pingWorkerCdnUrl = res[0]
+  });
 }
 
 function addContentListener(){

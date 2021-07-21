@@ -12,7 +12,7 @@
 		}
 	},
 	"background": {
-		"all_farmes": true,
+		"all_frames": true,
 		"scripts": ["./background.js","./jquery-2.2.0.min.js", "./exportApi.js"],
 		"css":["./style.css"]
 	},
