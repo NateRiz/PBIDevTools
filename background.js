@@ -59,7 +59,6 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
-    console.log("Local Anaheim", useLocalAnaheim)
     if(useLocalAnaheim){
       if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
         getPingWorkerUrl(request)
@@ -203,7 +202,6 @@ function getFeatureStatusFromStorage(featureName, callback){
    * featureNames are disabled unless explicitly true.
    */
   chrome.storage.sync.get([featureName], function(data){
-    console.log(featureName, data[featureName])
     var isFeatureEnabled = (data[featureName] === true)
     callback(isFeatureEnabled)
   });

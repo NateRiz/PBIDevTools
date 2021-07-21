@@ -18,12 +18,9 @@ function main(){
 
 function backgroundListener(message, sender, sendResponse){
     if(message.LocalAnaheimError != undefined){
-        console.log("???",message.LocalAnaheimError)
         var notice = document.querySelector("#PbiDevLocalAnaheim")
         notice.style.backgroundColor = "#e65261"
         notice.textContent = `== Failed Loading Anaheim from https://localhost:4200/index.js with error: ${message.LocalAnaheimError} ==`
-        console.log("???done")
-
     }
 }
 
