@@ -251,4 +251,6 @@ TODO:
 - auth into adhoc accounts 
 - fix edog raid
 - train
+- using CDN pingworker in localhost anaheim. Stop
+- fix FSes
 */
