@@ -6,8 +6,12 @@ function main(){
     fetch(chrome.extension.getURL('/activities.json'))
     .then((resp) => resp.json())
     .then(function (jsonData) {
-        console.log("LOADED")
         activityTypes = jsonData
+        var activityTypeInput = document.querySelector("#PbiDevActivityTypeInput")
+        if (activityTypeInput !== null){
+            activityTypeInput.oninput()
+        }
+
     })
 
     chrome.storage.sync.get(["DevToolbar", "UseLocalAnaheim"], function(data){
@@ -39,7 +43,23 @@ function main(){
 
             activityTypeResult.value = (activityTypes[activityType] === undefined ? "Not Found" : activityTypes[activityType])
         }
+
+        var clipboard = getClipboard()
+        if (clipboard !== undefined && clipboard.length == 4){
+            activityTypeInput.value = clipboard
+            activityTypeInput.oninput()
+        }
     }
+}
+
+function getClipboard(){
+    var t = document.createElement("input");
+    document.body.appendChild(t);
+    t.focus();
+    document.execCommand("paste");
+    var clipboardText = t.value.trim();
+    document.body.removeChild(t);
+    return clipboardText
 }
 
 document.addEventListener("DOMContentLoaded", function(event) { 
