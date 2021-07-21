@@ -59,6 +59,7 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
+    console.log("Local Anaheim", useLocalAnaheim)
     if(useLocalAnaheim){
       if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
         getPingWorkerUrl(request)
@@ -111,6 +112,7 @@ function addOnErrorOccurredListener(){
 
 function addTabUpdateListener(){
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    getFeatureStatusFromStorage("UseLocalAnaheim", (isFeatureEnabled) => {useLocalAnaheim = isFeatureEnabled;})
 
     //Below here are all non Chrome://xyz urls
     if (isChromeLocalUrl(tab.url)){
@@ -121,7 +123,6 @@ function addTabUpdateListener(){
     if (!isPbiReportUrl(tab.url)) {
       return
     }
-
     startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
 
     chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
@@ -202,6 +203,7 @@ function getFeatureStatusFromStorage(featureName, callback){
    * featureNames are disabled unless explicitly true.
    */
   chrome.storage.sync.get([featureName], function(data){
+    console.log(featureName, data[featureName])
     var isFeatureEnabled = (data[featureName] === true)
     callback(isFeatureEnabled)
   });
@@ -231,7 +233,6 @@ function addOnInstallListener(){
 }
 
 function main() {
-  getFeatureStatusFromStorage("UseLocalAnaheim", (isFeatureEnabled) => {useLocalAnaheim = isFeatureEnabled;})
   addBrowserActionListener();
   addBeforeSendHeadersListener();
   addHeadersReceivedListener();
@@ -252,5 +253,4 @@ TODO:
 - fix edog raid
 - train
 - using CDN pingworker in localhost anaheim. Stop
-- fix FSes
 */
