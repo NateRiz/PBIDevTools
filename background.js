@@ -70,9 +70,15 @@ function addBeforeRequestListener(){
       }
     }
 
-    if (request["method"] != "POST"){
+    if(request.method === "DELETE"){
+      if (/.*\/session\/[a-z0-9]*$/.test(request.url))
+      chrome.tabs.sendMessage(request.tabId, "DeleteSession")
+    }
+
+    if (request.method !== "POST"){
       return;
     }
+
     if (request.requestBody && request.requestBody.raw){
       var postedString = decodeURIComponent(String.fromCharCode.apply(null,
           new Uint8Array(request.requestBody.raw[0].bytes)));

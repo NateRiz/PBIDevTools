@@ -34,6 +34,17 @@ function expireSession() {
     })
 }
 
+function updateSessionToolbar() {
+    /**
+     * When the session is deleted, set the dev toolbar to red / expired to reflect it
+     */
+    var sessionStatus = document.querySelector("#PbiDevSessionStatus")
+    sessionStatus.textContent = "Expired"
+
+    var sessionIndicator = document.querySelector("#PbiDevSessionContainer")
+    sessionIndicator.style.borderLeftColor = "#ee0000"
+}
+
 function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
@@ -280,6 +291,11 @@ function networkDispatcher(message, sender, sendResponse){
         "tenantObjectId":"PbiDevTenant",
         "reportViewerVersion":"PbiDevReportViewer"
     };
+
+    if (message === "DeleteSession"){
+        updateSessionToolbar()
+    }
+
     if (message.responseHeaders){
         message.responseHeaders.forEach(header => {
             if (!("name" in header && "value" in header)){
