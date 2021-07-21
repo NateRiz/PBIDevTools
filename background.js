@@ -82,7 +82,20 @@ function addBeforeRequestListener(){
       "*://*.dc.services.visualstudio.com/v2/track",
       "*://*.content.powerapps.com/*", // Redirecting Anaheim cdn
       "*://*.powerbi.com/*",
+      "*://*.analysis-df.windows.net/*",
     ]}, ["requestBody", "blocking"])
+}
+
+function addOnErrorOccurredListener(){
+  chrome.webRequest.onErrorOccurred.addListener(function(response){
+    message = {"LocalAnaheimError": response.error}
+    console.log("error, sending to tab", response.tabId, message)
+    chrome.tabs.sendMessage(response.tabId, message);
+  },
+  {
+    urls: [
+      "https://localhost:4200/index.js",
+    ]}, [])
 }
 
 function addTabUpdateListener(){
@@ -203,6 +216,7 @@ function main() {
   addHeadersReceivedListener();
   addBeforeRequestListener();
   addContentListener();
+  addOnErrorOccurredListener();
   addTabUpdateListener();
   addOnInstallListener();
 }
