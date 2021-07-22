@@ -182,7 +182,7 @@
       </div>
 
       <div class="PbiDevCenter">
-        <button class="PbiDevButton" id="PbiDevExpireNow" disabled type="button">Delete Session</button>
+        <button class="PbiDevButton PbiDevDependsOnAuthorization" id="PbiDevExpireNow" type="button">Delete Session</button>
         <img id="DeleteSessionInfo" class="PbiDevInfo">
         <span id="DeleteSessionInfoTooltip" class="PbiDevInfoTooltip">
           * Send a request to delete the session now. May take ~10 seconds for Anaheim to realize the session died.
@@ -220,9 +220,9 @@
       <div class="PbiDevDebugPair"><span>Body:</span></div>
       <textarea id="PbiDevAPIBody" class="PbiDevTextArea" rows="4">{&#10    "format" : "PDF"&#10}</textarea>
       <div class="PbiDevCenter">
-        <button id="PbiDevAPIExport" class="PbiDevButton" type="button">Export</button>
-        <button id="PbiDevAPIGetStatus" class="PbiDevButton" type="button">Get Status</button>
-        <button id="PbiDevAPISave" class="PbiDevButton" type="button">Save</button>
+        <button id="PbiDevAPIExport" class="PbiDevButton PbiDevDependsOnAuthorization" type="button">Export</button>
+        <button id="PbiDevAPIGetStatus" class="PbiDevButton PbiDevDependsOnAuthorization" type="button">Get Status</button>
+        <button id="PbiDevAPISave" class="PbiDevButton PbiDevDependsOnAuthorization" type="button">Save</button>
       </div>
       <div class="PbiDevDebugPair">
         <span>Status Code:</span>
@@ -249,7 +249,7 @@
     <div class="PbiDevCategoryTitle">Misc</div>
     <div class="PbiDevCategory">
       <div class="PbiDevCenter">
-        <button id="PbiDevDownloadRdl" class="PbiDevButton" type="button">Download Rdl</button>
+        <button id="PbiDevDownloadRdl" class="PbiDevButton PbiDevDependsOnAuthorization" type="button">Download Rdl</button>
       </div>
       </div>
 

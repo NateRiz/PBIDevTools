@@ -215,8 +215,8 @@ function toggleKeepSessionAlive(){
 }
 
 function onReceivedAuthToken(){
-    enableDeleteSessionButton()
     populateRdlDebugInfo()
+    document.querySelectorAll(".PbiDevDependsOnAuthorization").forEach((btn)=>btn.classList.remove("PbiDevDependsOnAuthorization"))
 }
 
 function populateRdlDebugInfo(){
@@ -277,16 +277,8 @@ function setDataSource(idx){
     })
 }
 
-function enableDeleteSessionButton(){
-    var deleteSessionButton = document.querySelector("#PbiDevExpireNow")
-    if (deleteSessionButton){
-        deleteSessionButton.disabled = false;
-    }
-}
-
 function createDebugButton(button) {
     var button = document.querySelector("#feedbackMenuBtn");
-
 
     //Clone button to remove click functionality
     debugButton = button.cloneNode(true);

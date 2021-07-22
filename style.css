@@ -36,6 +36,11 @@
     padding: 0px 8px;
 }
 
+.PbiDevDependsOnAuthorization{
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 .PbiDevSessionIndicator{
     border-left: 2px solid #00aa00;
 }
