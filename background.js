@@ -4,8 +4,11 @@ var bearerToken = ""
 var routingHint = ""
 var useLocalAnaheim = false
 var pingWorkerCdnUrl = ""
+var isAnaheimLoaded = false
 
 function isPbiReportUrl(url) {
+  return url.includes("powerbi") || url.includes("windows-int")
+
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
   /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url)
 }
@@ -54,13 +57,29 @@ function addBeforeSendHeadersListener(){
   ]}, ["requestHeaders"]);
 }
 
+function onAnaheimLoad(){
+  if (isAnaheimLoaded){
+    return
+  }
+
+  isAnaheimLoaded = true
+  chrome.webNavigation.getAllFrames({tabId:request.tabId},function(frames){
+    frames.forEach((frame)=>{
+      if(frame.parentFrameId === 0 && frame.url !== "about:blank"){
+        startScriptExecution('DevToolbar', ['./Anaheim.js'], request.tabId, frame.frameId)
+      }
+    })
+  });
+}
+
 function addBeforeRequestListener(){
   /**
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
-    if(useLocalAnaheim){
-      if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
+    if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
+      onAnaheimLoad()
+      if(useLocalAnaheim){
         getPingWorkerUrl(request)
         return {redirectUrl: "https://localhost:4200/index.js"}
       }
@@ -123,14 +142,6 @@ function addTabUpdateListener(){
       return
     }
     startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
-
-    chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
-      frames.forEach((frame)=>{
-        if(frame.parentFrameId == 0){
-          startScriptExecution('DevToolbar', ['./Anaheim.js'], tabId, frame.frameId)
-        }
-      })
-    });
 
     startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
