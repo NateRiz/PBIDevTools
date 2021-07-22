@@ -7,8 +7,6 @@ var pingWorkerCdnUrl = ""
 var isAnaheimLoaded = false
 
 function isPbiReportUrl(url) {
-  return url.includes("powerbi") || url.includes("windows-int")
-
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
   /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url)
 }
@@ -57,16 +55,16 @@ function addBeforeSendHeadersListener(){
   ]}, ["requestHeaders"]);
 }
 
-function onAnaheimLoad(){
+function onAnaheimLoad(tabId){
   if (isAnaheimLoaded){
     return
   }
 
   isAnaheimLoaded = true
-  chrome.webNavigation.getAllFrames({tabId:request.tabId},function(frames){
+  chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
     frames.forEach((frame)=>{
       if(frame.parentFrameId === 0 && frame.url !== "about:blank"){
-        startScriptExecution('DevToolbar', ['./Anaheim.js'], request.tabId, frame.frameId)
+        startScriptExecution('DevToolbar', ['./Anaheim.js'], tabId, frame.frameId)
       }
     })
   });
@@ -78,7 +76,7 @@ function addBeforeRequestListener(){
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
     if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
-      onAnaheimLoad()
+      onAnaheimLoad(request.tabId)
       if(useLocalAnaheim){
         getPingWorkerUrl(request)
         return {redirectUrl: "https://localhost:4200/index.js"}
@@ -143,7 +141,7 @@ function addTabUpdateListener(){
     }
     startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
 
-    startScriptExecution('DevToolbar', ['./jquery-2.2.0.min.js', './exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
+    startScriptExecution('DevToolbar', ['./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })
 	});
