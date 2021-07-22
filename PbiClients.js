@@ -315,7 +315,7 @@ function networkDispatcher(message, sender, sendResponse){
     if(message.requestHeaders){
         if (!rdlWorkloadUrl && isPingUrl(message.url)){
             rdlWorkloadUrl = message.url.replace("/ping","")
-            var auth = message.requestHeaders.find(header => header["name"] === "Authorization")
+            var auth = message.requestHeaders.find(header => header["name"].toLowerCase() === "authorization")
             bearerToken = auth["value"]
             updateToolbarResult("PbiDevBearerToken", `${bearerToken.slice(0, 15)}...${bearerToken.slice(-5)}`)
             var xmsRoutingHint = message.requestHeaders.find(header => header["name"] === "x-ms-routing-hint")
