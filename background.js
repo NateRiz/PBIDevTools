@@ -239,4 +239,5 @@ TODO:
 - train
 - disable download and export until auth token reecived
 - faster way to get auth token besides ping
+- css being injected many many times
 */
