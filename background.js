@@ -237,4 +237,6 @@ TODO:
 - auth into adhoc accounts 
 - fix edog raid
 - train
+- disable download and export until auth token reecived
+- faster way to get auth token besides ping
 */

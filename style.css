@@ -27,6 +27,15 @@
     padding: 2px;
 }
 
+.PbiDevScrollContainer{
+    padding: 0px 16px;
+}
+
+.PbiDevNavButton{
+    margin: 0px;
+    padding: 0px 8px;
+}
+
 .PbiDevSessionIndicator{
     border-left: 2px solid #00aa00;
 }

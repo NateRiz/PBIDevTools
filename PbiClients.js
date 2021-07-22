@@ -9,6 +9,9 @@ if (window.PbiDevPbiClientsInjected !== true){
     var apiBaseUrl = ""
     var lastExportID = ""
     var lastExportFilename = ""
+    var dataProviders = []
+    var connectionStrings = []
+    var dataSourceIndex = 0
 }
 
 function isPingUrl(url){
@@ -110,7 +113,16 @@ function createModal(){
             }
         })
 
-
+        var dataSourceNext = document.querySelector("#PbiDevDataSourceNext")
+        dataSourceNext.onclick = ()=>{
+            dataSourceIndex = (dataSourceIndex + 1) % dataProviders.length
+            setDataSource(dataSourceIndex)
+        }
+        var dataSourcePrev = document.querySelector("#PbiDevDataSourcePrev")
+        dataSourcePrev.onclick = ()=>{
+            dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
+            setDataSource(dataSourceIndex)
+        }
     });
 }
 
@@ -179,25 +191,90 @@ function isExportAPIEnabled(){
     return apiBaseUrl !== ""
 }
 
-function downloadRdl(){
+function fetchRdl(){
     if (!clusterUrl || !bearerToken){
         return
     }
     var reportId = window.location.href.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
     var url = `https://${clusterUrl}/export/reports/${reportId}/rdl`
-    fetch(url, {
+    return fetch(url, {
         method: 'GET',
         headers: {'Authorization': bearerToken}
     }).then((response) => {
-        return response.text()
-    }).then((data) => { 
-        download("Download.rdl", data)
+         return response.text()
     })
+}
+
+function downloadRdl(){
+    fetchRdl().then((data)=>download("Download.rdl", data))
 }
 
 function toggleKeepSessionAlive(){
     isKeepingSessionAlive = !document.querySelector("#PbiDevPingToggle").checked
     chrome.runtime.sendMessage({"isKeepingSessionAlive":isKeepingSessionAlive})
+}
+
+function onReceivedAuthToken(){
+    enableDeleteSessionButton()
+    populateRdlDebugInfo()
+}
+
+function populateRdlDebugInfo(){
+    fetchRdl().then((rdl)=>{
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(rdl, "text/xml");
+
+        var dataProviderNodes = xmlDoc.getElementsByTagName("DataProvider")
+        var connectionStringNodes = xmlDoc.getElementsByTagName("ConnectString")
+        for(var i=0; i<dataProviderNodes.length; i++) {
+            dataProviders.push(dataProviderNodes[i].childNodes[0].nodeValue)
+            connectionStrings.push(connectionStringNodes[i].childNodes[0].nodeValue)
+        }
+
+        if (dataProviderNodes.length !== 0){
+            setDataSource(0)
+        }
+
+        var numEmbeddedImages = xmlDoc.getElementsByTagName("EmbeddedImage").length
+        document.querySelector("#PbiDevEmbeddedImages").textContent = numEmbeddedImages
+
+    })
+}
+
+function setDataSource(idx){
+    function createPair(key, value){
+        var container = document.createElement("div")
+        container.classList.add("PbiDevDebugPair")
+        var span = document.createElement("span")
+        span.textContent = key
+        var resultContainer = document.createElement("div")
+        resultContainer.classList.add("PbiDevDebugResult")
+        var result = document.createElement("span")
+        result.textContent = value
+
+        container.appendChild(span)
+        container.appendChild(resultContainer)
+        resultContainer.appendChild(result)
+
+        var dataSourceContainer = document.querySelector("#PbiDevDataSources")
+        dataSourceContainer.appendChild(container)
+    }
+
+    var dataSourceContainer = document.querySelector("#PbiDevDataSources")
+    dataSourceContainer.hidden = false
+    while(dataSourceContainer.firstChild){
+        dataSourceContainer.removeChild(dataSourceContainer.firstChild)
+    }
+
+    var dataSourceNav = document.querySelector("#PbiDevDataSourceNav")
+    dataSourceNav.textContent = `${idx + 1} of ${dataProviders.length}`
+    createPair("Data Provider:", dataProviders[idx])
+    var properties = connectionStrings[idx].split(";")
+    properties.forEach((prop)=>{
+        var key, value
+        [key, value] = prop.split("=")
+        createPair(`${key}:`, value)
+    })
 }
 
 function enableDeleteSessionButton(){
@@ -320,7 +397,7 @@ function networkDispatcher(message, sender, sendResponse){
             updateToolbarResult("PbiDevBearerToken", `${bearerToken.slice(0, 15)}...${bearerToken.slice(-5)}`)
             var xmsRoutingHint = message.requestHeaders.find(header => header["name"] === "x-ms-routing-hint")
             routingHint = xmsRoutingHint["value"]
-            enableDeleteSessionButton()
+            onReceivedAuthToken()
         }
     }
     if(message.timeSinceLastInteractionMs){
