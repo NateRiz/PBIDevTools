@@ -3,8 +3,6 @@ var sessionUrl = ""
 var bearerToken = ""
 var routingHint = ""
 var useLocalAnaheim = false
-var pingWorkerCdnUrl = ""
-var isAnaheimLoaded = false
 
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
@@ -56,11 +54,6 @@ function addBeforeSendHeadersListener(){
 }
 
 function onAnaheimLoad(tabId){
-  if (isAnaheimLoaded){
-    return
-  }
-
-  isAnaheimLoaded = true
   chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
     frames.forEach((frame)=>{
       if(frame.parentFrameId === 0 && frame.url !== "about:blank"){
@@ -78,12 +71,7 @@ function addBeforeRequestListener(){
     if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
       onAnaheimLoad(request.tabId)
       if(useLocalAnaheim){
-        getPingWorkerUrl(request)
         return {redirectUrl: "https://localhost:4200/index.js"}
-      }
-      if(/.*pingworker\.worker\.worker\.js/.test(request.url)){
-        var origin = new URL(request.url).origin
-        return {redirectUrl: `${origin}/${pingWorkerCdnUrl}`}
       }
     }
 
@@ -154,16 +142,6 @@ function expireSession(request){
        'Authorization': request.bearerToken,
        'x-ms-routing-hint': request.routingHint
     }});
-}
-
-function getPingWorkerUrl(request){
-  fetch(request.url, {
-    method: 'GET',
-  }).then((response) => response.text())
-  .then((response) => {
-    var res = response.match(/(pingworker\.worker\.[a-zA-Z0-9]*\.worker\.js)/)
-    pingWorkerCdnUrl = res[0]
-  });
 }
 
 function addContentListener(){
@@ -259,5 +237,4 @@ TODO:
 - auth into adhoc accounts 
 - fix edog raid
 - train
-- using CDN pingworker in localhost anaheim. Stop
 */
