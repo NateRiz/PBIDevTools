@@ -15,7 +15,8 @@ if (window.PbiDevPbiClientsInjected === undefined){
 }
 
 function isPingUrl(url){
-    return /.*pbidedicated.window.*.net.*ping/.test(url)
+    return /.*pbidedicated.window.*.net.*ping/.test(url) ||
+    /.*localhost.*ping$/.test(url)
 }
 
 function toggleModal(){
@@ -223,16 +224,83 @@ function downloadRdl(){
 }
 
 function loadSessionSummary(){
-    if (!clusterUrl || !bearerToken){
-        return
-    }
     var url = rdlWorkloadUrl + "/sessionSummary"
     console.log(url)
     fetch(url, {
         method: 'GET',
-        headers:{'Authorization': bearerToken}
-    }).then((response) => response.text)
-    .then((response) => console.log(response))
+        headers:{'authorization': "Fake Bearer Token"}
+    }).then((response) => response.text())
+    .then((response) => populateSessionSummary(JSON.parse(response)))
+}
+
+function populateSessionSummary(response){
+    function createPair(key, value){
+        var container = document.createElement("div")
+        container.classList.add("PbiDevDebugPair")
+        var span = document.createElement("span")
+        span.textContent = key
+        var resultContainer = document.createElement("div")
+        resultContainer.classList.add("PbiDevDebugResult")
+        var result = document.createElement("span")
+        result.textContent = value
+
+        container.appendChild(span)
+        container.appendChild(resultContainer)
+        resultContainer.appendChild(result)
+
+        var dataSourceContainer = document.querySelector("#PbiDevSessionSummaryContainer")
+        dataSourceContainer.appendChild(container)
+    }
+
+    function createPadPair(key, value){
+        var container = document.createElement("div")
+        container.classList.add("PbiDevDebugPair")
+        container.style.marginLeft = "16px"
+        var span = document.createElement("span")
+        span.textContent = key
+        var resultContainer = document.createElement("div")
+        resultContainer.classList.add("PbiDevDebugResult")
+        var result = document.createElement("span")
+        result.textContent = value
+
+        container.appendChild(span)
+        container.appendChild(resultContainer)
+        resultContainer.appendChild(result)
+
+        var dataSourceContainer = document.querySelector("#PbiDevSessionSummaryContainer")
+        dataSourceContainer.appendChild(container)
+
+    }
+
+
+    var dataSourceContainer = document.querySelector("#PbiDevSessionSummaryContainer")
+    while(dataSourceContainer.firstChild){
+        dataSourceContainer.removeChild(dataSourceContainer.firstChild)
+    }
+
+    createPair("SessionDuration (ms):",response["durationInMilliseconds"])
+
+    renderSummaries = response["renderSummaryList"]
+    for (var i=0; i<renderSummaries.length; i++){
+        render = renderSummaries[i]
+        createPair(`Render ID (${i}):`, render["renderId"])
+        createPadPair("Status:", render["status"])
+        ops = render["operationSummaryList"]
+        for (var j=0; j<ops.length; j++){
+            op = ops[j]
+            createPadPair(`${j}. Operation Name:`, op["operationName"])
+            createPadPair("Source Name:", op["sourceName"])
+            createPadPair("Duration (ms):", op["durationInMilliseconds"])
+            createPadPair("Number of Rows:", op["numberOfRows"])
+        }
+
+    }
+
+
+
+
+
+
 }
 
 function toggleKeepSessionAlive(){
@@ -396,6 +464,9 @@ function networkDispatcher(message, sender, sendResponse){
             if (!("name" in header && "value" in header)){
                 return;
             }
+            if (message.url.endsWith("/session")){
+                clusterUrl = new URL(message.url).hostname
+            }
             if (header["name"] in textIds){
                 if (header["name"] == 'requestid'){
                     rootActivityId = header['value']
@@ -405,6 +476,10 @@ function networkDispatcher(message, sender, sendResponse){
             }
         });
         return;
+    }
+
+    if(message.url.endsWith("/ping")){
+        rdlWorkloadUrl = message.url.replace("/ping","")
     }
 
     if(message.requestHeaders){

@@ -22,6 +22,7 @@ function addHeadersReceivedListener(){
     if (response["method"] != "POST"){
       return;
     }
+    console.log(response.url)
     chrome.tabs.sendMessage(response.tabId, response);
 	}, {
 		urls: [
@@ -29,6 +30,7 @@ function addHeadersReceivedListener(){
 			"*://*.pbidedicated.windows-int.net/*/ping", // ping (hostmode)
 		  "*://*.analysis.windows.net/*/session", // session (raid)
 		  "*://*.analysis-df.windows.net/*/session", // session (raid)
+      "*://localhost/*"
 		]}, ["responseHeaders"]);
 }
 
@@ -51,6 +53,7 @@ function addBeforeSendHeadersListener(){
     "*://*.analysis-df.windows.net/*",
     "*://*.analysis.windows.net/*",
     "*://*.powerbi.com/*",
+    "*://localhost/*"
   ]}, ["requestHeaders"]);
 }
 
@@ -101,6 +104,7 @@ function addBeforeRequestListener(){
       "*://*.content.powerapps.com/*", // Redirecting Anaheim cdn
       "*://*.powerbi.com/*",
       "*://*.analysis-df.windows.net/*",
+      "*://localhost/*"
     ]}, ["requestBody", "blocking"])
 }
 
