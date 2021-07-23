@@ -13,6 +13,7 @@
 
 .PbiDevDebugPair{
     padding-bottom: 8px;
+    overflow: auto;
 }
 
 .PbiDevContainer{
