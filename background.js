@@ -69,7 +69,7 @@ function addBeforeRequestListener(){
    * Post: Gets TTL from anaheim and updates anaheim accordingly. Also gets some debug info from Track calls
    */
   chrome.webRequest.onBeforeRequest.addListener(function(request){
-    if((/index\..*\.js/).test(request.url) && request.tabId !== -1){
+    if((/index.*js/).test(request.url) && request.tabId !== -1){
       onAnaheimLoad(request.tabId)
       if(useLocalAnaheim){
         return {redirectUrl: "https://localhost:4200/index.js"}
