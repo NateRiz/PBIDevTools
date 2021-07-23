@@ -123,6 +123,9 @@ function createModal(){
             dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
             setDataSource(dataSourceIndex)
         }
+
+        document.querySelector("#PbiDevLoadSessionSummary").onclick = loadSessionSummary;
+
     });
 }
 
@@ -207,6 +210,19 @@ function fetchRdl(){
 
 function downloadRdl(){
     fetchRdl().then((data)=>download("Download.rdl", data))
+}
+
+function loadSessionSummary(){
+    if (!clusterUrl || !bearerToken){
+        return
+    }
+    var url = rdlWorkloadUrl + "/sessionSummary"
+    console.log(url)
+    fetch(url, {
+        method: 'GET',
+        headers:{'Authorization': bearerToken}
+    }).then((response) => response.text)
+    .then((response) => console.log(response))
 }
 
 function toggleKeepSessionAlive(){
