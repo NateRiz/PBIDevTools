@@ -6,7 +6,8 @@ var useLocalAnaheim = false
 
 function isPbiReportUrl(url) {
 	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
-  /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url)
+  /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url) ||
+  /.*localhost:(4300|55450)\/home.*/.test(url)
 }
 
 function isChromeLocalUrl(url) {
@@ -49,7 +50,7 @@ function addBeforeSendHeadersListener(){
     "*://*.pbidedicated.windows-int.net/*/ping",
     "*://*.analysis-df.windows.net/*",
     "*://*.analysis.windows.net/*",
-    "*://*.powerbi.com/*"
+    "*://*.powerbi.com/*",
   ]}, ["requestHeaders"]);
 }
 
@@ -235,9 +236,10 @@ TODO:
 - autofill TSG
 - private chrome extensions
 - auth into adhoc accounts 
-- fix edog raid
 - train
 - faster way to get auth token besides ping
-- css being injected many many times
-- debug bar scrollable
+- debug tab stop css being injected many many times
+- copy conn string
+- debug tab scrollable
+- disable debug tab when nav away from rdlreport (back home for ex.)
 */

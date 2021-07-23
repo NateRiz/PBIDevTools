@@ -18,6 +18,8 @@
 .PbiDevContainer{
     background-color: #eaeaea;
     display: block;
+    float: right;
+    overflow-y: scroll;
     padding: 8px;
     width: 425px !important;
 }

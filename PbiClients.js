@@ -1,5 +1,5 @@
-if (window.PbiDevPbiClientsInjected !== true){
-    window.PbiDevPbiClientsInjected = true
+if (window.PbiDevPbiClientsInjected === undefined){
+    window.PbiDevPbiClientsInjected = false
     var isKeepingSessionAlive = false;
     var clusterUrl = ""
     var rdlWorkloadUrl = ""
@@ -50,8 +50,18 @@ function updateSessionToolbar() {
 
 function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
-        root = document.querySelector("#rootContent");
-        root.insertAdjacentHTML('beforeend', html);
+        if (window.location.hostname === "localhost"){
+            iframeParent = document.querySelector("#reportContentLeft").parentNode;
+            iframeParent.style.display = "block";
+            iframeParent.style.overflow = "hidden";
+            root = iframeParent.parentNode;
+            root.insertAdjacentHTML('beforeend', html);
+            root.insertBefore(root.lastElementChild, iframeParent)
+        }else{
+            root = document.querySelector("#rootContent");
+            root.insertAdjacentHTML('beforeend', html);
+        }
+        
 
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
         document.querySelector("#PbiDevPingToggle").onclick = toggleKeepSessionAlive
@@ -301,7 +311,7 @@ function createDebugButton(button) {
 }
 
 function isAlreadyInjected() {
-    return document.querySelector("#PBIDevToolImageId") != null;
+    return document.querySelector("#PbiDevTools") != null;
 }
 
 function isPageLoaded(){
@@ -415,12 +425,12 @@ function networkDispatcher(message, sender, sendResponse){
 } 
 
 function main() {
-    if (isAlreadyInjected() || !isPageLoaded()){
+    if (isAlreadyInjected() || window.PbiDevPbiClientsInjected === true){
         return;
     }
-    
+    window.PbiDevPbiClientsInjected = true
     chrome.runtime.onMessage.addListener(networkDispatcher);
-    createDebugButton();
+    //createDebugButton();
     createModal();
 }
 
