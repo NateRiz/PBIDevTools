@@ -48,6 +48,13 @@ function updateSessionToolbar() {
     sessionIndicator.style.borderLeftColor = "#ee0000"
 }
 
+function deleteModal(){
+    var devTools = document.querySelector(".PbiDevContainer")
+    if (devTools !== null){
+        devTools.parentElement.removeChild(devTools)
+    }
+}
+
 function createModal(){
     fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
@@ -379,6 +386,10 @@ function networkDispatcher(message, sender, sendResponse){
         "tenantObjectId":"PbiDevTenant",
         "reportViewerVersion":"PbiDevReportViewer"
     };
+
+    if (message === "CleanupOnNavigate"){
+        deleteModal()
+    }
 
     if (message === "DeleteSession"){
         updateSessionToolbar()

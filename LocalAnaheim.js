@@ -16,6 +16,13 @@ function main(){
     isLocalAnaheimLoaded = true;
 }
 
+function deleteNotice() {
+    var notice = document.querySelector("#PbiDevLocalAnaheim")
+    if(notice !== null){
+        notice.parentElement.removeChild(notice)
+    }
+}
+
 function blockPingWorker(){
     var script = document.createElement('script');
     script.type = "module"
@@ -25,6 +32,10 @@ function blockPingWorker(){
 }
 
 function backgroundListener(message, sender, sendResponse){
+    if (message === "CleanupOnNavigate"){
+        deleteNotice()
+    }
+
     if(message.LocalAnaheimError != undefined){
         var notice = document.querySelector("#PbiDevLocalAnaheim")
         notice.style.backgroundColor = "#e65261"

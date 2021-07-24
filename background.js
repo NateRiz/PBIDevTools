@@ -117,6 +117,11 @@ function addOnErrorOccurredListener(){
 function addTabUpdateListener(){
 	chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     getFeatureStatusFromStorage("UseLocalAnaheim", (isFeatureEnabled) => {useLocalAnaheim = isFeatureEnabled;})
+    
+    if(changeInfo.url){
+      // Navigating to a different page. Clean up leftover html.
+      chrome.tabs.sendMessage(tabId, "CleanupOnNavigate");
+    }
 
     //Below here are all non Chrome://xyz urls
     if (isChromeLocalUrl(tab.url)){
