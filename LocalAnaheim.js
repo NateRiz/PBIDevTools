@@ -21,6 +21,7 @@ function deleteNotice() {
     if(notice !== null){
         notice.parentElement.removeChild(notice)
     }
+    window.isLocalAnaheimLoaded = undefined
 }
 
 function blockPingWorker(){

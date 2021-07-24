@@ -1,5 +1,5 @@
-if (window.PbiDevPbiClientsInjected !== true){
-    window.PbiDevPbiClientsInjected = true
+if (window.PbiDevPbiClientsInjected === undefined){
+    window.PbiDevPbiClientsInjected = false
     var isKeepingSessionAlive = false;
     var clusterUrl = ""
     var rdlWorkloadUrl = ""
@@ -53,6 +53,7 @@ function deleteModal(){
     if (devTools !== null){
         devTools.parentElement.removeChild(devTools)
     }
+    window.PbiDevPbiClientsInjected = undefined
 }
 
 function createModal(){
@@ -311,23 +312,23 @@ function createDebugButton(button) {
     parent = button.parentNode;
     parent.removeChild(button);
 
+    //Insert after Help button
+    parent.insertBefore(debugButton, document.querySelector("#helpMenuBtn").nextSibling)
+
     //Replace Image
-    var style = debugButton.querySelector(".pbi-glyph-smiley")
-    style.classList.remove("pbi-glyph-smiley")
-    const img = document.createElement("img");
-    img.src = chrome.runtime.getURL("./debug16.png");
-    img.id = "PBIDevToolImageId"
-    style.appendChild(img);
+    var smiley = debugButton.querySelector(".pbi-glyph-smiley")
+    if (smiley !== null){
+        smiley.classList.remove("pbi-glyph-smiley")
+        const img = document.createElement("img");
+        img.src = chrome.runtime.getURL("./debug16.png");
+        img.id = "PBIDevToolImageId"
+        smiley.appendChild(img);
+    }
+    
+    var debugButton = document.querySelector("#feedbackMenuBtn")
 
     //new functionality
     debugButton.onclick = toggleModal;
-
-    //Insert after Help button
-    parent.insertBefore(debugButton, document.querySelector("#helpMenuBtn").nextSibling)
-}
-
-function isAlreadyInjected() {
-    return document.querySelector("#PBIDevToolImageId") != null;
 }
 
 function isPageLoaded(){
@@ -445,10 +446,11 @@ function networkDispatcher(message, sender, sendResponse){
 } 
 
 function main() {
-    if (isAlreadyInjected() || !isPageLoaded()){
+    if (window.PbiDevPbiClientsInjected === true || !isPageLoaded()){
         return;
     }
-    
+
+    window.PbiDevPbiClientsInjected = true
     chrome.runtime.onMessage.addListener(networkDispatcher);
     createDebugButton();
     createModal();
