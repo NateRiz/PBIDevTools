@@ -20,16 +20,7 @@ function backgroundListener(message, sender, sendResponse){
     }
 }
 
-function blockPingWorker(){
-    var script = document.createElement('script');
-    script.type = "module"
-    script.textContent = `window.Worker = undefined`;
-    (document.head||document.documentElement).appendChild(script);
-    script.remove();
-}
-
 function main(){
-    blockPingWorker()
     chrome.runtime.onMessage.addListener(backgroundListener);
     setInterval(keepSessionAlive, 30000);
 

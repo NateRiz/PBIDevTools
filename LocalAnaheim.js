@@ -16,6 +16,14 @@ function main(){
     isLocalAnaheimLoaded = true;
 }
 
+function blockPingWorker(){
+    var script = document.createElement('script');
+    script.type = "module"
+    script.textContent = `window.Worker = undefined`;
+    (document.head||document.documentElement).appendChild(script);
+    script.remove();
+}
+
 function backgroundListener(message, sender, sendResponse){
     if(message.LocalAnaheimError != undefined){
         var notice = document.querySelector("#PbiDevLocalAnaheim")
@@ -25,6 +33,7 @@ function backgroundListener(message, sender, sendResponse){
 }
 
 if (!window.isLocalAnaheimLoaded && document.readyState === "complete"){
+    blockPingWorker()
     main();
     chrome.runtime.onMessage.addListener(backgroundListener);
 }
