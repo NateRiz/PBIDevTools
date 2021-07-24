@@ -54,6 +54,31 @@
     float: right;
 }
 
+.PbiDevDebugPairOverflow{
+    padding-bottom: 4px;
+}
+
+.PbiDevDebugResultContainerOverflow{
+    display: block;
+    overflow: hidden;
+    float: none;
+    padding-left: 16px;
+}
+
+.PbiDevDebugResultOverflow{
+    background-color: #f3f2f1;
+    border: none;
+    height: 28px;
+    float: right;
+    text-align: right;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.PbiDevDebugPairLeftOverflow{
+    float: left;
+}
+
 .PbiDevTextArea{
     display: block;
     width: 80%;

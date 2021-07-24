@@ -260,12 +260,15 @@ function populateRdlDebugInfo(){
 function setDataSource(idx){
     function createPair(key, value){
         var container = document.createElement("div")
-        container.classList.add("PbiDevDebugPair")
+        container.classList.add("PbiDevDebugPairOverflow")
         var span = document.createElement("span")
+        span.classList.add("PbiDevDebugPairLeftOverflow")
         span.textContent = key
         var resultContainer = document.createElement("div")
-        resultContainer.classList.add("PbiDevDebugResult")
-        var result = document.createElement("span")
+        resultContainer.classList.add("PbiDevDebugResultContainerOverflow")
+        var result = document.createElement("textarea")
+        result.rows = "1"
+        result.classList.add("PbiDevDebugResultOverflow")
         result.textContent = value
 
         container.appendChild(span)
