@@ -25,12 +25,10 @@
 		"debugWindow.html"
 	],
 	"permissions": [
-		"tabs",
 		"webNavigation",
 		"webRequest",
 		"webRequestBlocking",
 		"storage",
-		"clipboardRead",
 		"<all_urls>"
 	]
 }
