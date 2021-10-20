@@ -29,6 +29,12 @@
 		"webRequest",
 		"webRequestBlocking",
 		"storage",
-		"<all_urls>"
+		"*://*.pbidedicated.windows.net/",
+		"*://*.pbidedicated.windows-int.net/",
+		"*://*.analysis.windows.net/",
+		"*://*.analysis-df.windows.net/",
+		"*://*.powerbi.com/*",
+		"*://*.dc.services.visualstudio.com/v2/track/",
+		"*://*.content.powerapps.com/*"
 	]
 }
