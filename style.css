@@ -79,10 +79,38 @@
     float: left;
 }
 
+.PbiDevInput{
+    max-width: 32px;
+}
+
 .PbiDevTextArea{
     display: block;
     width: 80%;
     margin: 0px auto 8px auto;
+}
+
+.PbiDevPerfScreenBlock{
+    position: fixed;
+    background-color: rgb(0,0,0,0.4);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.PbiDevPerfPrompt{
+    background-color: #f3f2f1;
+    width: 25%;
+    height: 15%;
+    display: inline-block;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #7f7f7f;
 }
 
 .PbiDevCenter{

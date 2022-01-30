@@ -6,16 +6,22 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var rootActivityId = ""
     var bearerToken = ""
     var routingHint = ""
+    var renderId = ""
     var apiBaseUrl = ""
     var lastExportID = ""
     var lastExportFilename = ""
     var dataProviders = []
     var connectionStrings = []
     var dataSourceIndex = 0
+    var isRenderComplete = false
 }
 
 function isPingUrl(url){
     return /.*pbidedicated.window.*.net.*ping/.test(url)
+}
+
+function isPollRenderUrl(url){
+    return /.*pbidedicated.window.*.net.*render\//.test(url)
 }
 
 function toggleModal(){
@@ -54,6 +60,11 @@ function deleteModal(){
         devTools.parentElement.removeChild(devTools)
     }
     window.PbiDevPbiClientsInjected = undefined
+}
+
+function disableScreenForPerfTest(){
+    root = document.querySelector("#rootContent");
+
 }
 
 function createModal(){
@@ -131,9 +142,6 @@ function createModal(){
             dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
             setDataSource(dataSourceIndex)
         }
-
-        document.querySelector("#PbiDevLoadSessionSummary").onclick = loadSessionSummary;
-
     });
 }
 
@@ -218,19 +226,6 @@ function fetchRdl(){
 
 function downloadRdl(){
     fetchRdl().then((data)=>download("Download.rdl", data))
-}
-
-function loadSessionSummary(){
-    if (!clusterUrl || !bearerToken){
-        return
-    }
-    var url = rdlWorkloadUrl + "/sessionSummary"
-    console.log(url)
-    fetch(url, {
-        method: 'GET',
-        headers:{'Authorization': bearerToken}
-    }).then((response) => response.text)
-    .then((response) => console.log(response))
 }
 
 function toggleKeepSessionAlive(){
@@ -376,6 +371,34 @@ function updateSessionTimer(timeSinceLastInteractionMs){
     updateToolbarResult("PbiDevTTLBG", time)
 }
 
+function pollRenderStatus(){
+    if (isRenderComplete || rdlWorkloadUrl === "" || renderId === "" || bearerToken === ""){
+        return;
+    }
+
+    chrome.runtime.sendMessage({
+        url: `${rdlWorkloadUrl}/render/${renderId}`,
+        bearerToken: bearerToken,
+        routingHint: routingHint,
+        pollRenderStatus: true
+    }, function(response){
+        if (response.status !== "running"){
+            onRenderComplete(response)
+        }
+    })
+}
+
+function onRenderComplete(response){
+    isRenderComplete = true
+    var timeProcessingLabel = document.querySelector("#PbiDevTimeProcessing")
+    var timeRenderingLabel = document.querySelector("#PbiDevTimeRendering")
+    var contentSizeLabel = document.querySelector("#PbiDevContentSize")
+
+    timeProcessingLabel.textContent = response.timeProcessingms
+    timeRenderingLabel.textContent = response.timeRenderingms
+    contentSizeLabel.textContent = response.contentSize
+}
+
 function networkDispatcher(message, sender, sendResponse){
     textIds = {
         "requestid": "PbiDevRaid",
@@ -396,10 +419,16 @@ function networkDispatcher(message, sender, sendResponse){
         updateSessionToolbar()
     }
 
+    if (message.url !== undefined && isPollRenderUrl(message.url)){
+    }
+
     if (message.responseHeaders){
         message.responseHeaders.forEach(header => {
             if (!("name" in header && "value" in header)){
                 return;
+            }
+            if (header["name"] == "operation-location"){
+                renderId = header["value"].substr(-32)
             }
             if (header["name"] in textIds){
                 if (header["name"] == 'requestid'){
@@ -423,8 +452,11 @@ function networkDispatcher(message, sender, sendResponse){
             onReceivedAuthToken()
         }
     }
+
+    // Every time we ping we check render status.
     if(message.timeSinceLastInteractionMs){
         updateSessionTimer(message["timeSinceLastInteractionMs"]);
+        pollRenderStatus()
     }
 
     if(!Array.isArray(message)){
@@ -449,11 +481,11 @@ function main() {
     if (window.PbiDevPbiClientsInjected === true || !isPageLoaded()){
         return;
     }
-
     window.PbiDevPbiClientsInjected = true
     chrome.runtime.onMessage.addListener(networkDispatcher);
     createDebugButton();
     createModal();
+    disableScreenForPerfTest();
 }
 
 main();

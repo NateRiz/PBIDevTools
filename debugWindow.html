@@ -239,12 +239,49 @@
       <textarea id="PbiDevAPIResult" class="PbiDevTextArea" rows="4" readonly>Result of the export will update here.</textarea>
     </div>
 
-    <div class="PbiDevCategoryTitle">Session Summary</div>
+    <br>
+    <div class="PbiDevCategoryTitle">Performance</div>
     <div class="PbiDevCategory">
+      <div class="PbiDevDebugPair">
+        <span>Time Processing ms</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevTimeProcessing">-1</span>
+        </div>
+      </div>
+      <div class="PbiDevDebugPair">
+        <span>Time Rendering ms</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevTimeRendering">-1</span>
+        </div>
+      </div>
+      <div class="PbiDevDebugPair">
+        <span>Content Size</span>
+        <div class="PbiDevDebugResult">
+          <span id="PbiDevContentSize">-1</span>
+        </div>
+      </div>
+      <div class="PbiDevDebugPair">
+        <span>Renders:</span>
+        <div class="PbiDevDebugResult">
+          <input class="PbiDevInput" value="0">
+        </div>
+      </div>
       <div class="PbiDevCenter">
-        <button id="PbiDevLoadSessionSummary" class="PbiDevButton PbiDevDependsOnAuthorization" type="button">Load Session Summary</button>
+        <button class="PbiDevButton" type="button">Start</button>
       </div>      
     </div>
+  </div>
+
+  <br>
+  <div class="PbiDevPerfScreenBlock" hidden>
+    <div class="PbiDevPerfPrompt">
+      <span>Running Performance Tests...</span>
+      <br>
+      <span>0 of 0</span>
+      <br>
+      <button class="PbiDevButton">End</button>
+    </div>
+
   </div>
 
   </div>

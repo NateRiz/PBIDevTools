@@ -19,13 +19,15 @@ function addHeadersReceivedListener(){
    */
   chrome.webRequest.onHeadersReceived.addListener(function(response) {
     if (response["method"] != "POST"){
-      return;
+      // return;
     }
     chrome.tabs.sendMessage(response.tabId, response);
 	}, {
 		urls: [
 			"*://*.pbidedicated.windows.net/*/ping", // ping (hostmode)
 			"*://*.pbidedicated.windows-int.net/*/ping", // ping (hostmode)
+      "*://*.pbidedicated.windows.net/*/render", // ping (hostmode)
+			"*://*.pbidedicated.windows-int.net/*/render", // ping (hostmode)
 		  "*://*.analysis.windows.net/*/session", // session (raid)
 		  "*://*.analysis-df.windows.net/*/session", // session (raid)
 		]}, ["responseHeaders"]);
@@ -36,7 +38,6 @@ function addBeforeSendHeadersListener(){
    * For caching bearer token, ping url. 
    */
   chrome.webRequest.onBeforeSendHeaders.addListener(function(requestHeaders){
-
     if (requestHeaders.tabId == -1){
       //case of this script making a GET call
       return;
@@ -45,8 +46,8 @@ function addBeforeSendHeadersListener(){
   
   },
   {urls: [
-    "*://*.pbidedicated.windows.net/*/ping",
-    "*://*.pbidedicated.windows-int.net/*/ping",
+    "*://*.pbidedicated.windows.net/*",
+    "*://*.pbidedicated.windows-int.net/*",
     "*://*.analysis-df.windows.net/*",
     "*://*.analysis.windows.net/*",
     "*://*.powerbi.com/*"
@@ -149,6 +150,20 @@ function expireSession(request){
     }});
 }
 
+function pollRenderStatus(request, sendResponse){
+  fetch(request.url, {
+      method: 'GET',
+      headers: {
+        'Authorization': request.bearerToken,
+        'x-ms-routing-hint': request.routingHint
+      }
+  }).then((response) => {
+    return response.json()
+  }).then((response) =>{
+    sendResponse(response)
+  })
+}
+
 function addContentListener(){
   chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -156,8 +171,12 @@ function addContentListener(){
         //Mirror it back so that it gets sent to the iframe
         chrome.tabs.sendMessage(sender.tab.id, request);
       }
-      if (request.sessionUrl){
+      else if (request.sessionUrl){
         expireSession(request);
+      }
+      else if (request.pollRenderStatus){
+        pollRenderStatus(request, sendResponse)
+        return true;
       }
     }
   );
