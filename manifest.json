@@ -22,7 +22,8 @@
 		"kusto.png",
 		"info.png",
 		"activities.json",
-		"debugWindow.html"
+		"debugWindow.html",
+		"Performance.rdl"
 	],
 	"permissions": [
 		"webNavigation",

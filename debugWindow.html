@@ -261,25 +261,25 @@
         </div>
       </div>
       <div class="PbiDevDebugPair">
-        <span>Renders:</span>
+        <span>Amount of Tests:</span>
         <div class="PbiDevDebugResult">
-          <input class="PbiDevInput" value="0">
+          <input id="PbiDevTestAmount" class="PbiDevInput" value="0">
         </div>
       </div>
       <div class="PbiDevCenter">
-        <button class="PbiDevButton" type="button">Start</button>
+        <button id="PbiDevStartPerf" class="PbiDevButton" type="button">Start</button>
       </div>      
     </div>
   </div>
 
   <br>
-  <div class="PbiDevPerfScreenBlock" hidden>
+  <div id="PbiDevScreenBlock" class="PbiDevPerfScreenBlock" hidden>
     <div class="PbiDevPerfPrompt">
       <span>Running Performance Tests...</span>
       <br>
-      <span>0 of 0</span>
+      <span id="PbiDevTestStatus">0 of 0</span>
       <br>
-      <button class="PbiDevButton">End</button>
+      <button class="PbiDevButton" type="button">End</button>
     </div>
 
   </div>
