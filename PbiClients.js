@@ -41,7 +41,9 @@ function expireSession() {
         bearerToken: bearerToken,
         routingHint: routingHint,
         expireSession: true
-    })
+    },
+    function(){updateSessionToolbar()}
+    )
 }
 
 function updateSessionToolbar() {
@@ -598,7 +600,6 @@ function networkDispatcher(message, sender, sendResponse){
                     rootActivityId = header['value']
                     clusterUrl = new URL(message.url).hostname
                 }
-                console.log(">>",header['value'])
                 updateToolbarResult(textIds[header["name"]], header["value"])
             }
         });

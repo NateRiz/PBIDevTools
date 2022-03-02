@@ -76,7 +76,7 @@ function addBeforeRequestListener(){
       }
     }
 
-    if(request.method === "DELETE"){
+    if(request.method === "DELETE" && request.tabId !== -1){
       if (/.*\/session\/[a-z0-9]*$/.test(request.url))
       chrome.tabs.sendMessage(request.tabId, "DeleteSession")
     }
@@ -86,12 +86,15 @@ function addBeforeRequestListener(){
     }
 
     if (request.requestBody && request.requestBody.raw){
-      var postedString = decodeURIComponent(String.fromCharCode.apply(null,
-          new Uint8Array(request.requestBody.raw[0].bytes)));
-          try{
-            chrome.tabs.sendMessage(request.tabId, JSON.parse(postedString));
-          }catch{}
+      var postedString = decodeURIComponent(new Uint8Array(request.requestBody.raw[0].bytes).reduce(function (data, byte) {
+        return data + String.fromCharCode(byte);
+      }, ''))
+      try{
+        chrome.tabs.sendMessage(request.tabId, JSON.parse(postedString));
+      }catch{
+        console.log(`couldnt parse json for request body: ${postedString}`)
       }
+    }
   },
   {
     urls: [
@@ -141,13 +144,13 @@ function addTabUpdateListener(){
 	});
 }
 
-function expireSession(request){
+function expireSession(request, sendResponse){
   const response = fetch(request.sessionUrl, {
     method: 'DELETE',
     headers: {
        'Authorization': request.bearerToken,
        'x-ms-routing-hint': request.routingHint
-    }});
+    }}).then(() => sendResponse());
 }
 
 function pollRenderStatus(request, sendResponse){
@@ -172,7 +175,7 @@ function addContentListener(){
         chrome.tabs.sendMessage(sender.tab.id, request);
       }
       else if (request.sessionUrl){
-        expireSession(request);
+        expireSession(request, sendResponse);
       }
       else if (request.pollRenderStatus){
         pollRenderStatus(request, sendResponse)
