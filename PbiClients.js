@@ -569,8 +569,6 @@ function networkDispatcher(message, sender, sendResponse){
         "requestid": "PbiDevRaid",
         "x-ms-routing-hint": "PbiDevHostMode",
         "cluster":"PbiDevCluster",
-        "capacityId":"PbiDevCapacity",
-        "sessionId":"PbiDevSession",
         "userObjectId":"PbiDevUser",
         "tenantObjectId":"PbiDevTenant",
         "reportViewerVersion":"PbiDevReportViewer"
@@ -596,10 +594,11 @@ function networkDispatcher(message, sender, sendResponse){
                 renderId = header["value"].substr(-32)
             }
             if (header["name"] in textIds){
-                if (header["name"] == 'requestid'){
+                if (header["name"] === 'requestid'){
                     rootActivityId = header['value']
                     clusterUrl = new URL(message.url).hostname
                 }
+                console.log(">>",header['value'])
                 updateToolbarResult(textIds[header["name"]], header["value"])
             }
         });
@@ -612,6 +611,8 @@ function networkDispatcher(message, sender, sendResponse){
             var auth = message.requestHeaders.find(header => header["name"].toLowerCase() === "authorization")
             bearerToken = auth["value"]
             updateToolbarResult("PbiDevBearerToken", `${bearerToken.slice(0, 15)}...${bearerToken.slice(-5)}`)
+            updateToolbarResult("PbiDevCapacity", rdlWorkloadUrl.substr(rdlWorkloadUrl.indexOf("capacities/")+11, 36))
+            updateToolbarResult("PbiDevSession", rdlWorkloadUrl.substr(-32))
             var xmsRoutingHint = message.requestHeaders.find(header => header["name"] === "x-ms-routing-hint")
             routingHint = xmsRoutingHint["value"]
             onReceivedAuthToken()
