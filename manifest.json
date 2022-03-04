@@ -2,8 +2,8 @@
 	"name": "PowerBI Dev Tools",
 	"description": "PowerBI Dev Tools",
 	"version": "1.0",
-	"manifest_version": 3,
-	"action": {
+	"manifest_version": 2,
+	"browser_action": {
 		"default_icon": {
 			"16": "./icon16.png",
 			"32": "./icon32.png",
@@ -13,29 +13,23 @@
 	},
 	"background": {
 		"all_frames": true,
-		"service_worker": "background.js",
+		"scripts": ["./background.js", "./exportApi.js"],
 		"css":["./style.css"]
 	},
-	"web_accessible_resources": [{
-		"resources": [
-			"debug16.png",
-			"copy.png",
-			"kusto.png",
-			"info.png",
-			"activities.json",
-			"debugWindow.html",
-			"Performance.rdl"
-		],
-		"matches": ["<all_urls>"]
-	}],
+	"web_accessible_resources": [
+		"debug16.png",
+		"copy.png",
+		"kusto.png",
+		"info.png",
+		"activities.json",
+		"debugWindow.html",
+		"Performance.rdl"
+	],
 	"permissions": [
 		"webNavigation",
 		"webRequest",
-		"declarativeNetRequest",
-		"scripting",
-		"storage"
-	],
-	"host_permissions": [
+		"webRequestBlocking",
+		"storage",
 		"*://*.pbidedicated.windows.net/",
 		"*://*.pbidedicated.windows-int.net/",
 		"*://*.analysis.windows.net/",
@@ -44,5 +38,4 @@
 		"*://*.dc.services.visualstudio.com/v2/track/",
 		"*://*.content.powerapps.com/*"
 	]
-
 }

@@ -3,7 +3,7 @@ function main(){
     var isUseLocalAnaheimEnabled = false
     var activityTypes = {}
 
-    fetch(chrome.runtime.getURL('/activities.json'))
+    fetch(chrome.extension.getURL('/activities.json'))
     .then((resp) => resp.json())
     .then(function (jsonData) {
         activityTypes = jsonData

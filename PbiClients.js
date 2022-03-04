@@ -469,7 +469,7 @@ function createAndDownloadPerfReport(onCompletion){
         processingData = json["timeProcessingms"]
     }
 
-    fetch(chrome.runtime.getURL('/Performance.rdl'))
+    fetch(chrome.extension.getURL('/Performance.rdl'))
     .then((resp) => resp.text())
     .then((resp) => {
         build=""
