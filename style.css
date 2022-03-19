@@ -1,8 +1,15 @@
 .PbiDevTitle{
     color: #808080;
     font-size: 16px;
+    margin: 0px;
     text-align: right;
-    margin: 8px 0px;
+}
+
+.PbiDevSubtitle{
+    color: #808080;
+    font-size: 12px;
+    margin: 0px;
+    text-align: right;
 }
   
 .PbiDevDebugInfo{

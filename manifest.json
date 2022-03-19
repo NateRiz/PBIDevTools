@@ -23,7 +23,8 @@
 		"info.png",
 		"activities.json",
 		"debugWindow.html",
-		"Performance.rdl"
+		"Performance.rdl",
+		"VERSION.txt"
 	],
 	"permissions": [
 		"webNavigation",

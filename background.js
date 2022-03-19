@@ -140,8 +140,8 @@ function addTabUpdateListener(){
     if (!isPbiReportUrl(tab.url)) {
       return
     }
-    startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
 
+    startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
     startScriptExecution('DevToolbar', ['./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })

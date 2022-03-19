@@ -153,6 +153,10 @@ function createModal(){
             reloadPageForPerf(1, Number(testAmount) || 999)
         }
 
+        fetch(chrome.extension.getURL('/VERSION.txt'))
+        .then((resp) => resp.text())
+        .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
+
         disablePageIfPerfTesting()
     });
 }
