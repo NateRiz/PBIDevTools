@@ -5,8 +5,12 @@ var routingHint = ""
 var useLocalAnaheim = false
 
 function isPbiReportUrl(url) {
-	return /.*powerbi.*\.(net|com).*\/rdlreports\/.*/.test(url) ||
-  /.*portal\.analysis\.windows-int\.net.*\/rdlreports\/.*/.test(url)
+  /**
+   * This extension will run only on powerbi (service) domains or for local development.
+   * 'rdlreports' for reports. 'datasets' for quicktable
+   */
+	return /.*powerbi.*\.(net|com).*\/(rdlreports|datasets)\/.*/.test(url) ||
+  /.*portal\.analysis\.windows-int\.net.*\/(rdlreports|datasets)\/.*/.test(url)
 }
 
 function isChromeLocalUrl(url) {
