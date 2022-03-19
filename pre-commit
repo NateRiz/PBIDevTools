@@ -1,0 +1,8 @@
+#!/bin/sh
+# Move this file to .git/hooks/pre-commit
+echo "Pre-Commit Begin"
+version=$(cat VERSION.txt)
+inc=$(echo $version | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+echo $inc > VERSION.txt
+git add VERSION.txt
+echo "Pre-Commit End"
