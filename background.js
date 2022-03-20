@@ -108,7 +108,7 @@ function addBeforeRequestListener(){
       "*://*.content.powerapps.com/*", // Redirecting Anaheim cdn
       "*://*.powerbi.com/*",
       "*://*.analysis-df.windows.net/*",
-    ]}, ["requestBody", "blocking"])
+    ]}, ["requestBody"])
 }
 
 function addOnErrorOccurredListener(){
@@ -143,7 +143,7 @@ function addTabUpdateListener(){
 
     startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
     startScriptExecution('DevToolbar', ['./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
-      chrome.tabs.insertCSS(tabId, {'file':"style.css"});
+      chrome.scripting.insertCSS({target: {tabId: tabId}, files: ["style.css"]});
     })
 	});
 }
@@ -189,7 +189,7 @@ function addContentListener(){
   );
 }
 
-function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, callback=()=>{}){
+function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, callback){
   /**
    * Recursively executes all scripts passed in if the feature is enabled. Scripts are executed in order
    * @param {string} featureName name of the feature that will get checked in chrome storage
@@ -198,20 +198,18 @@ function startScriptExecution(featureName, scriptFilePaths, tabId, frameId=0, ca
    * @param {number} frameId optional frame to execute inside the tab. Default 0 is top level.
    * @param {function} callback optional callback to run after all scripts execute
    */
-  let func = (isFeatureEnabled)=>{
-    if(!isFeatureEnabled){
-      return
+
+  getFeatureStatusFromStorage(featureName, (isFeatureEnabled) =>{
+    if(isFeatureEnabled){
+      chrome.scripting.executeScript({
+        target: {tabId: tabId, frameIds: [frameId]},
+        files: scriptFilePaths
+      },
+      callback
+      );
     }
-    scriptPath = scriptFilePaths.shift()
-    chrome.tabs.executeScript(tabId, {'file': scriptPath, 'frameId': frameId}, () => {
-      if (scriptFilePaths.length){
-        startScriptExecution(featureName, scriptFilePaths,tabId, frameId, callback)
-      }else{
-        callback()
-      }
-    });
-  };
-  getFeatureStatusFromStorage(featureName, func)
+  })
+
 }
 
 function getFeatureStatusFromStorage(featureName, callback){
@@ -225,12 +223,12 @@ function getFeatureStatusFromStorage(featureName, callback){
   });
 }
 
-function addBrowserActionListener(){
+function addActionListener(){
   /**
    * Popup menu when the extension's icon is clicked.
    */
-  chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.browserAction.setPopup({"popup":"./popup.html"})
+  chrome.action.onClicked.addListener(function(tab) {
+    chrome.action.setPopup({"popup":"./popup.html"})
   });
 }
 
@@ -249,7 +247,7 @@ function addOnInstallListener(){
 }
 
 function main() {
-  addBrowserActionListener();
+  addActionListener();
   addBeforeSendHeadersListener();
   addHeadersReceivedListener();
   addBeforeRequestListener();
