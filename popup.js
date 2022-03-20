@@ -14,6 +14,10 @@ function main(){
 
     })
 
+    fetch(chrome.extension.getURL('/VERSION.txt'))
+    .then((resp) => resp.text())
+    .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
+
     chrome.storage.sync.get(["DevToolbar", "UseLocalAnaheim"], function(data){
         isDevToolbarEnabled = (data.DevToolbar===true)
         isUseLocalAnaheimEnabled = (data.UseLocalAnaheim===true)

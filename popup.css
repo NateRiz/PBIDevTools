@@ -44,6 +44,10 @@
     font-weight: bold;
 }
 
+.PbiDevSubtitle{
+  float: right;
+  font-size: 12px;
+}
 
 .switch {
     position: relative;
