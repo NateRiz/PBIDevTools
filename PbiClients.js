@@ -153,6 +153,8 @@ function createModal(){
             reloadPageForPerf(1, Number(testAmount) || 999)
         }
 
+        document.querySelector("#PbiDevPerfEnd").onclick = () => endPerformanceTests()
+
         fetch(chrome.extension.getURL('/VERSION.txt'))
         .then((resp) => resp.text())
         .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
@@ -423,7 +425,7 @@ function reloadPageForPerf(currentTestNumber, totalTestAmount) {
     window.location = nextPage
 }
 
-function disablePageIfPerfTesting(){
+function disablePageIfPerfTesting() {
     url = new URL(document.URL)
     var curRender = Number(url.searchParams.get("PbiDevCurrent") || -1)
     var endRender = Number(url.searchParams.get("PbiDevEnd") || -1)
@@ -437,7 +439,7 @@ function disablePageIfPerfTesting(){
     document.querySelector("#PbiDevTestStatus").textContent = `${curRender} of ${endRender}`
 }
 
-function endPerformanceTests(){
+function endPerformanceTests() {
     createAndDownloadPerfReport(()=>{
         url = new URL(document.URL)
         url.searchParams.delete("PbiDevCurrent")
@@ -468,11 +470,13 @@ function createAndDownloadPerfReport(onCompletion){
     renderingData = []
     processingData = []
 
-    if (json !== null){
-        renderingData = json["timeRenderingms"]
-        processingData = json["timeProcessingms"]
+    if (json === null || json["timeRenderingms"].length == 0){
+        onCompletion()
     }
 
+    renderingData = json["timeRenderingms"]
+    processingData = json["timeProcessingms"]
+    
     fetch(chrome.extension.getURL('/Performance.rdl'))
     .then((resp) => resp.text())
     .then((resp) => {
