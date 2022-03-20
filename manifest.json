@@ -34,6 +34,7 @@
 		"*://*.pbidedicated.windows.net/",
 		"*://*.pbidedicated.windows-int.net/",
 		"*://*.analysis.windows.net/",
+		"*://*.analysis.windows-int.net/",
 		"*://*.analysis-df.windows.net/",
 		"*://*.powerbi.com/*",
 		"*://*.dc.services.visualstudio.com/v2/track/",
