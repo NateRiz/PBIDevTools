@@ -3,17 +3,6 @@ function main(){
     var isUseLocalAnaheimEnabled = false
     var activityTypes = {}
 
-    fetch(chrome.extension.getURL('/activities.json'))
-    .then((resp) => resp.json())
-    .then(function (jsonData) {
-        activityTypes = jsonData
-        var activityTypeInput = document.querySelector("#PbiDevActivityTypeInput")
-        if (activityTypeInput !== null){
-            activityTypeInput.oninput()
-        }
-
-    })
-
     fetch(chrome.extension.getURL('/VERSION.txt'))
     .then((resp) => resp.text())
     .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
@@ -43,6 +32,19 @@ function main(){
             var activityType = activityTypeInput.value.toUpperCase()
             if (activityType.length != 4){
                 return
+            }
+
+            if (Object.keys(activityTypes).length == 0){
+                fetch(chrome.extension.getURL('/activities.json'))
+                .then((resp) => resp.json())
+                .then(function (jsonData) {
+                    activityTypes = jsonData
+                    var activityTypeInput = document.querySelector("#PbiDevActivityTypeInput")
+                    if (activityTypeInput !== null){
+                        activityTypeInput.oninput()
+                    }
+                    console.log("LODA")
+                })
             }
 
             activityTypeResult.value = (activityTypes[activityType] === undefined ? "Not Found" : activityTypes[activityType])
