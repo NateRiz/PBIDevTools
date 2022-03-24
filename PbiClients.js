@@ -7,14 +7,12 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var bearerToken = ""
     var routingHint = ""
     var renderId = ""
-    var apiBaseUrl = ""
-    var lastExportID = ""
-    var lastExportFilename = ""
     var dataProviders = []
     var connectionStrings = []
     var dataSourceIndex = 0
     var isRenderComplete = false
     var isPerfTesting = false
+    var exportApiService = new ExportApiService()
 }
 
 function isPingUrl(url){
@@ -78,11 +76,11 @@ function createModal(){
         document.querySelector("#PbiDevExpireNow").onclick = expireSession
         document.querySelector("#PbiDevPingToggle").onclick = toggleKeepSessionAlive
         var apiExportButton = document.querySelector("#PbiDevAPIExport")
-        apiExportButton.onclick = APIExport
+        apiExportButton.onclick = () => exportApiService.APIExport()
         var apiGetStatusButton = document.querySelector("#PbiDevAPIGetStatus")
-        apiGetStatusButton.onclick = APIGetStatus
+        apiGetStatusButton.onclick =  () => exportApiService.APIGetStatus()
         var apiSaveButton = document.querySelector("#PbiDevAPISave")
-        apiSaveButton.onclick = APISave
+        apiSaveButton.onclick =  () => exportApiService.APISave()
         document.querySelector("#PbiDevDownloadRdl").onclick = downloadRdl
 
         var apiUrls = {
@@ -96,13 +94,13 @@ function createModal(){
         }
         var domain = window.location.hostname
         if (domain in apiUrls){
-            apiBaseUrl = apiUrls[domain]
+            exportApiService.SetApiBaseUrl(apiUrls[domain])
         }else{
             apiExportButton.disabled = true
             apiGetStatusButton.disabled = true
             apiSaveButton.disabled = true
         }
-        document.querySelector("#PbiDevAPIUrl").textContent = (apiExportButton.disabled ? "Ring not supported." : apiBaseUrl)
+        document.querySelector("#PbiDevAPIUrl").textContent = (apiExportButton.disabled ? "Ring not supported." : exportApiService.GetApiBaseUrl())
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -222,10 +220,6 @@ function getKustoQuery(){
     cluster('Biazure').database('${database}').RdlClientOpen
     | where timestamp > ago(1d)
     | where rId == "${rootActivityId}"`.replace(/  +/g, '')
-}
-
-function isExportAPIEnabled(){
-    return apiBaseUrl !== ""
 }
 
 function fetchRdl(){
