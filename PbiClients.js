@@ -309,23 +309,6 @@ function updateToolbarResult(id, value){
     }
 }
 
-function updateSessionTimer(timeSinceLastInteractionMs){
-    var timeSinceLastInteractionSec = Math.round(timeSinceLastInteractionMs / 1000)
-
-    var foregroundTimeout = 10 * 60 - timeSinceLastInteractionSec
-    var backgroundTimeout = 60 * 60 - timeSinceLastInteractionSec
-    
-    var mins = Math.floor(foregroundTimeout / 60)
-    var secs = foregroundTimeout % 60
-    var time = mins.toString().padStart(2, '0')+":"+secs.toString().padStart(2, '0')
-    updateToolbarResult("PbiDevTTLFG", time)
-
-    mins = Math.floor(backgroundTimeout / 60)
-    secs = backgroundTimeout % 60
-    time = mins.toString().padStart(2, '0')+":"+secs.toString().padStart(2, '0')
-    updateToolbarResult("PbiDevTTLBG", time)
-}
-
 function clearSessionStorage(){
     window.sessionStorage.removeItem('PbiDevPerf')
 }
@@ -561,7 +544,7 @@ function networkDispatcher(message, sender, sendResponse){
 
     // Every time we ping we check render status.
     if(message.timeSinceLastInteractionMs){
-        updateSessionTimer(message["timeSinceLastInteractionMs"]);
+        sessionService.UpdateSessionTimer(message["timeSinceLastInteractionMs"]);
         pollRenderStatus()
     }
 
