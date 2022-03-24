@@ -13,7 +13,7 @@
 	},
 	"background": {
 		"all_frames": true,
-		"scripts": ["./background.js", "./exportApi.js"],
+		"scripts": ["./background.js", "./exportApi.js", "./SessionService.js"],
 		"css":["./style.css"]
 	},
 	"web_accessible_resources": [

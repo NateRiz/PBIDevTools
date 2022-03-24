@@ -1,6 +1,5 @@
 if (window.PbiDevPbiClientsInjected === undefined){
     window.PbiDevPbiClientsInjected = false
-    var isKeepingSessionAlive = false;
     var clusterUrl = ""
     var rdlWorkloadUrl = ""
     var rootActivityId = ""
@@ -13,6 +12,7 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var isRenderComplete = false
     var isPerfTesting = false
     var exportApiService = new ExportApiService()
+    var sessionService = new SessionService()
 }
 
 function isPingUrl(url){
@@ -33,28 +33,6 @@ function toggleModal(){
     modal.style.display = display
 }
 
-function expireSession() {
-    chrome.runtime.sendMessage({
-        sessionUrl: rdlWorkloadUrl,
-        bearerToken: bearerToken,
-        routingHint: routingHint,
-        expireSession: true
-    },
-    function(){updateSessionToolbar()}
-    )
-}
-
-function updateSessionToolbar() {
-    /**
-     * When the session is deleted, set the dev toolbar to red / expired to reflect it
-     */
-    var sessionStatus = document.querySelector("#PbiDevSessionStatus")
-    sessionStatus.textContent = "Expired"
-
-    var sessionIndicator = document.querySelector("#PbiDevSessionContainer")
-    sessionIndicator.style.borderLeftColor = "#ee0000"
-}
-
 function deleteModal(){
     var devTools = document.querySelector(".PbiDevContainer")
     if (devTools !== null){
@@ -73,34 +51,11 @@ function createModal(){
         root = document.querySelector("#rootContent");
         root.insertAdjacentHTML('beforeend', html);
 
-        document.querySelector("#PbiDevExpireNow").onclick = expireSession
-        document.querySelector("#PbiDevPingToggle").onclick = toggleKeepSessionAlive
-        var apiExportButton = document.querySelector("#PbiDevAPIExport")
-        apiExportButton.onclick = () => exportApiService.APIExport()
-        var apiGetStatusButton = document.querySelector("#PbiDevAPIGetStatus")
-        apiGetStatusButton.onclick =  () => exportApiService.APIGetStatus()
-        var apiSaveButton = document.querySelector("#PbiDevAPISave")
-        apiSaveButton.onclick =  () => exportApiService.APISave()
-        document.querySelector("#PbiDevDownloadRdl").onclick = downloadRdl
+        exportApiService.CreateModal()
+        sessionService.CreateModal()
 
-        var apiUrls = {
-            "msit.powerbi.com":"https://api.powerbi.com",
-            "dxt.powerbi.com":"https://dxtapi.powerbi.com",
-            "powerbi-df.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
-            "powerbi-wow-int3.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
-            "powerbi-idog.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
-            "portal.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
-            "daily.powerbi.com":"https://dailyapi.powerbi.com"
-        }
-        var domain = window.location.hostname
-        if (domain in apiUrls){
-            exportApiService.SetApiBaseUrl(apiUrls[domain])
-        }else{
-            apiExportButton.disabled = true
-            apiGetStatusButton.disabled = true
-            apiSaveButton.disabled = true
-        }
-        document.querySelector("#PbiDevAPIUrl").textContent = (apiExportButton.disabled ? "Ring not supported." : exportApiService.GetApiBaseUrl())
+        document.querySelector("#PbiDevDownloadRdl").onclick = downloadRdl
+        
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -119,19 +74,6 @@ function createModal(){
         kustoButton.onclick = () => {
             copyToClipboard(getKustoQuery())
         }
-
-        var sessionExpireInfo = document.querySelectorAll(".PbiDevInfo")
-        sessionExpireInfo.forEach((img)=>{
-            img.src = chrome.runtime.getURL("./info.png")
-            var tooltip = document.querySelector("#"+ img.id +"Tooltip")
-            tooltip.style.display = "none";
-            img.onclick = function(){
-                if (!tooltip){return;}
-                var display = tooltip.style.display
-                display = (display == "none" ? "block" : "none");
-                tooltip.style.display = display
-            }
-        })
 
         var dataSourceNext = document.querySelector("#PbiDevDataSourceNext")
         dataSourceNext.onclick = ()=>{
@@ -244,11 +186,6 @@ function setAllowSessionExpiration(isChecked){
     document.querySelector("#PbiDevPingToggle").checked = isChecked
     toggleKeepSessionAlive()
 
-}
-
-function toggleKeepSessionAlive(){
-    isKeepingSessionAlive = !document.querySelector("#PbiDevPingToggle").checked
-    chrome.runtime.sendMessage({"isKeepingSessionAlive":isKeepingSessionAlive})
 }
 
 function onReceivedAuthToken(){
@@ -583,7 +520,7 @@ function networkDispatcher(message, sender, sendResponse){
     }
 
     if (message === "DeleteSession"){
-        updateSessionToolbar()
+        sessionService.UpdateSessionToolbar()
     }
 
     if (message.url !== undefined && isPollRenderUrl(message.url)){

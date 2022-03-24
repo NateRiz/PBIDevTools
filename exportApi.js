@@ -109,6 +109,34 @@ var ExportApiService = class {
     SetApiBaseUrl(url){
         this.apiBaseUrl = url
     }
+
+    CreateModal(){
+        var apiExportButton = document.querySelector("#PbiDevAPIExport")
+        apiExportButton.onclick = () => exportApiService.APIExport()
+        var apiGetStatusButton = document.querySelector("#PbiDevAPIGetStatus")
+        apiGetStatusButton.onclick =  () => exportApiService.APIGetStatus()
+        var apiSaveButton = document.querySelector("#PbiDevAPISave")
+        apiSaveButton.onclick =  () => exportApiService.APISave()
+
+        var apiUrls = {
+            "msit.powerbi.com":"https://api.powerbi.com",
+            "dxt.powerbi.com":"https://dxtapi.powerbi.com",
+            "powerbi-df.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "powerbi-wow-int3.analysis-df.windows.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "powerbi-idog.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "portal.analysis.windows-int.net":"https://biazure-int-edog-redirect.analysis-df.windows.net",
+            "daily.powerbi.com":"https://dailyapi.powerbi.com"
+        }
+        var domain = window.location.hostname
+        if (domain in apiUrls){
+            exportApiService.SetApiBaseUrl(apiUrls[domain])
+        }else{
+            apiExportButton.disabled = true
+            apiGetStatusButton.disabled = true
+            apiSaveButton.disabled = true
+        }
+        document.querySelector("#PbiDevAPIUrl").textContent = (apiExportButton.disabled ? "Ring not supported." : exportApiService.GetApiBaseUrl())
+    }
     
 }
 
