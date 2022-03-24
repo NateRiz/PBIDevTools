@@ -142,7 +142,7 @@ function addTabUpdateListener(){
     }
 
     startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
-    startScriptExecution('DevToolbar', ['SessionService.js','./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
+    startScriptExecution('DevToolbar', ['PerfService.js','SessionService.js','./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"style.css"});
     })
 	});
@@ -271,4 +271,5 @@ TODO:
 - faster way to get auth token besides ping
 - css being injected many many times
 - debug bar scrollable
+- Perf rdl and csv dont always download if the page reloads quickly
 */
