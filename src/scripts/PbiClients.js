@@ -13,7 +13,7 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var isPerfTesting = false
     var exportApiService = new ExportApiService()
     var sessionService = new SessionService()
-    var perfService = new PerfService()
+    var perfService = new PerfService(sessionService)
 }
 
 function isPingUrl(url){
@@ -59,25 +59,31 @@ function createModal(){
             image.onclick = function(){
                 var siblingId = image.id.replace("Copy","")
                 var text = document.querySelector("#" + siblingId)
-                copyToClipboard(text.textContent);
+                Utils.CopyToClipboard(text.textContent);
             }
         })
 
-        document.querySelector("#PbiDevBearerTokenCopy").onclick = () => copyToClipboard(getBearerToken());
+        document.querySelector("#PbiDevBearerTokenCopy").onclick = () => Utils.CopyToClipboard(getBearerToken());
 
         var kustoButton = document.querySelector("#PbiDevKustoCopy")
         kustoButton.src = chrome.runtime.getURL("./src/images/kusto.png")
         kustoButton.onclick = () => {
-            copyToClipboard(getKustoQuery())
+            Utils.CopyToClipboard(getKustoQuery())
         }
 
         var dataSourceNext = document.querySelector("#PbiDevDataSourceNext")
         dataSourceNext.onclick = ()=>{
+            if (dataProviders.length == 0){
+                return;
+            }
             dataSourceIndex = (dataSourceIndex + 1) % dataProviders.length
             setDataSource(dataSourceIndex)
         }
         var dataSourcePrev = document.querySelector("#PbiDevDataSourcePrev")
         dataSourcePrev.onclick = ()=>{
+            if (dataProviders.length == 0){
+                return;
+            }
             dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
             setDataSource(dataSourceIndex)
         }
@@ -92,37 +98,6 @@ function createModal(){
 
 function getBearerToken(){
     return bearerToken;
-}
-
-function copyToClipboard(text) {
-    var textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    textArea.remove();
-}
-
-function download(filename, text, type="text/plain") {
-    // Create an invisible A element
-    const a = document.createElement("a");
-    a.style.display = "none";
-    document.body.appendChild(a);
-  
-    // Set the HREF to a Blob representation of the data to be downloaded
-    a.href = window.URL.createObjectURL(
-      new Blob([text], { type })
-    );
-  
-    // Use download attribute to set set desired file name
-    a.setAttribute("download", filename);
-  
-    // Trigger the download by simulating click
-    a.click();
-  
-    // Cleanup
-    window.URL.revokeObjectURL(a.href);
-    document.body.removeChild(a);
 }
 
 function getKustoQuery(){
@@ -166,13 +141,7 @@ function fetchRdl(){
 }
 
 function downloadRdl(){
-    fetchRdl().then((data)=>download("Download.rdl", data))
-}
-
-function setAllowSessionExpiration(isChecked){
-    document.querySelector("#PbiDevPingToggle").checked = isChecked
-    sessionService.ToggleKeepSessionAlive()
-
+    fetchRdl().then((data)=>Utils.Download("Download.rdl", data))
 }
 
 function onReceivedAuthToken(){

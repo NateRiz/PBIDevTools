@@ -45,6 +45,11 @@ var SessionService = class{
         updateToolbarResult("PbiDevTTLBG", time)
     }
 
+    SetAllowSessionExpiration(isChecked){
+        document.querySelector("#PbiDevPingToggle").checked = isChecked
+        sessionService.ToggleKeepSessionAlive()
+    }
+
     CreateModal(){
         document.querySelector("#PbiDevExpireNow").onclick = () => sessionService.ExpireSession()
         document.querySelector("#PbiDevPingToggle").onclick = () => sessionService.ToggleKeepSessionAlive()

@@ -143,7 +143,8 @@ function addTabUpdateListener(){
 
     startScriptExecution('UseLocalAnaheim', ['./src/scripts/LocalAnaheim.js'], tabId)
     startScriptExecution('DevToolbar', [
-        './src/scripts/PerfService.js'
+      './src/scripts/Utils.js'
+      , './src/scripts/PerfService.js'
       , './src/scripts/SessionService.js'
       , './src/scripts/exportApi.js'
       , './src/scripts/PbiClients.js'], tabId, 0, ()=>{

@@ -1,5 +1,7 @@
 var PerfService = class{
-    constructor(){}
+    constructor(sessionService){
+        this.sessionService = sessionService
+    }
 
     CreateModal(){
         document.querySelector("#PbiDevStartPerf").onclick = () => {
@@ -21,7 +23,7 @@ var PerfService = class{
             return;
         }
         
-        setAllowSessionExpiration(false)
+        this.sessionService.SetAllowSessionExpiration(false)
         document.querySelector("#PbiDevScreenBlock").hidden = false
         document.querySelector("#PbiDevTestStatus").textContent = `${curRender} of ${endRender}`
     }
@@ -140,11 +142,11 @@ var PerfService = class{
             resp = resp.replace("{processing96}", this.Percentile(processingData, 96))
             resp = resp.replace("{processing99}", this.Percentile(processingData, 99))
     
-            download("Performance.rdl", resp)
+            Utils.Download("Performance.rdl", resp)
             
             var csv = `RenderingTime_ms,${renderingData.join(",")}\nProcessingTime_ms,${processingData.join(",")}`
     
-            download("Performance.csv", csv)
+            Utils.Download("Performance.csv", csv)
             onCompletion()
         })
     }
