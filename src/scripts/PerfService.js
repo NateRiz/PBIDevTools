@@ -95,7 +95,7 @@ var PerfService = class{
         renderingData = json["timeRenderingms"]
         processingData = json["timeProcessingms"]
         
-        fetch(chrome.extension.getURL('/Performance.rdl'))
+        fetch(chrome.extension.getURL('./src/res/Performance.rdl'))
         .then((resp) => resp.text())
         .then((resp) => {
             var build=""

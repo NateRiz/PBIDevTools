@@ -62,7 +62,7 @@ function onAnaheimLoad(tabId){
   chrome.webNavigation.getAllFrames({tabId:tabId},function(frames){
     frames.forEach((frame)=>{
       if(frame.parentFrameId === 0 && frame.url !== "about:blank"){
-        startScriptExecution('DevToolbar', ['./Anaheim.js'], tabId, frame.frameId)
+        startScriptExecution('DevToolbar', ['./src/scripts/Anaheim.js'], tabId, frame.frameId)
       }
     })
   });
@@ -141,9 +141,13 @@ function addTabUpdateListener(){
       return
     }
 
-    startScriptExecution('UseLocalAnaheim', ['./LocalAnaheim.js'], tabId)
-    startScriptExecution('DevToolbar', ['PerfService.js','SessionService.js','./exportApi.js', './PbiClients.js'], tabId, 0, ()=>{
-      chrome.tabs.insertCSS(tabId, {'file':"style.css"});
+    startScriptExecution('UseLocalAnaheim', ['./src/scripts/LocalAnaheim.js'], tabId)
+    startScriptExecution('DevToolbar', [
+        './src/scripts/PerfService.js'
+      , './src/scripts/SessionService.js'
+      , './src/scripts/exportApi.js'
+      , './src/scripts/PbiClients.js'], tabId, 0, ()=>{
+      chrome.tabs.insertCSS(tabId, {'file':"./src/style/style.css"});
     })
 	});
 }
@@ -230,7 +234,7 @@ function addBrowserActionListener(){
    * Popup menu when the extension's icon is clicked.
    */
   chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.browserAction.setPopup({"popup":"./popup.html"})
+    chrome.browserAction.setPopup({"popup":"./src/pages/popup.html"})
   });
 }
 

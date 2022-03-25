@@ -43,7 +43,7 @@ function deleteModal(){
 }
 
 function createModal(){
-    fetch(chrome.runtime.getURL('/debugWindow.html')).then(r => r.text()).then(html => {
+    fetch(chrome.runtime.getURL('./src/pages/debugWindow.html')).then(r => r.text()).then(html => {
         root = document.querySelector("#rootContent");
         root.insertAdjacentHTML('beforeend', html);
 
@@ -55,7 +55,7 @@ function createModal(){
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
-            image.src = chrome.runtime.getURL("./copy.png");
+            image.src = chrome.runtime.getURL("./src/images/copy.png");
             image.onclick = function(){
                 var siblingId = image.id.replace("Copy","")
                 var text = document.querySelector("#" + siblingId)
@@ -66,7 +66,7 @@ function createModal(){
         document.querySelector("#PbiDevBearerTokenCopy").onclick = () => copyToClipboard(getBearerToken());
 
         var kustoButton = document.querySelector("#PbiDevKustoCopy")
-        kustoButton.src = chrome.runtime.getURL("./kusto.png")
+        kustoButton.src = chrome.runtime.getURL("./src/images/kusto.png")
         kustoButton.onclick = () => {
             copyToClipboard(getKustoQuery())
         }
@@ -257,7 +257,7 @@ function createDebugButton(button) {
     if (smiley !== null){
         smiley.classList.remove("pbi-glyph-smiley")
         const img = document.createElement("img");
-        img.src = chrome.runtime.getURL("./debug16.png");
+        img.src = chrome.runtime.getURL("./src/images/debug16.png");
         img.id = "PBIDevToolImageId"
         smiley.appendChild(img);
     }

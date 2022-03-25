@@ -35,7 +35,7 @@ function main(){
             }
 
             if (Object.keys(activityTypes).length == 0){
-                fetch(chrome.extension.getURL('/activities.json'))
+                fetch(chrome.extension.getURL('/src/res/activities.json'))
                 .then((resp) => resp.json())
                 .then(function (jsonData) {
                     activityTypes = jsonData

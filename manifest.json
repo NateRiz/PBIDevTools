@@ -5,25 +5,25 @@
 	"manifest_version": 2,
 	"browser_action": {
 		"default_icon": {
-			"16": "./icon16.png",
-			"32": "./icon32.png",
-			"48": "./icon48.png",
-			"128": "./icon128.png"
+			"16": "./src/images/icon16.png",
+			"32": "./src/images/icon32.png",
+			"48": "./src/images/icon48.png",
+			"128": "./src/images/icon128.png"
 		}
 	},
 	"background": {
 		"all_frames": true,
-		"scripts": ["./background.js"],
-		"css":["./style.css"]
+		"scripts": ["./src/scripts/background.js"],
+		"css":[".src/style/style.css"]
 	},
 	"web_accessible_resources": [
-		"debug16.png",
-		"copy.png",
-		"kusto.png",
-		"info.png",
-		"activities.json",
-		"debugWindow.html",
-		"Performance.rdl",
+		"src/images/debug16.png",
+		"src/images/copy.png",
+		"src/images/kusto.png",
+		"src/images/info.png",
+		"src/res/activities.json",
+		"src/pages/debugWindow.html",
+		"src/res/Performance.rdl",
 		"VERSION.txt"
 	],
 	"permissions": [

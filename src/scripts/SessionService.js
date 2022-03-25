@@ -51,7 +51,7 @@ var SessionService = class{
 
         var sessionExpireInfo = document.querySelectorAll(".PbiDevInfo")
         sessionExpireInfo.forEach((img)=>{
-            img.src = chrome.runtime.getURL("./info.png")
+            img.src = chrome.runtime.getURL("./src/images/info.png")
             var tooltip = document.querySelector("#"+ img.id +"Tooltip")
             tooltip.style.display = "none";
             img.onclick = function(){
