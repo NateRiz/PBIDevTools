@@ -14,6 +14,7 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var exportApiService = new ExportApiService()
     var sessionService = new SessionService()
     var perfService = new PerfService(sessionService)
+    var rdlService = new RdlService()
 }
 
 function isPingUrl(url){
@@ -50,8 +51,9 @@ function createModal(){
         exportApiService.CreateModal()
         sessionService.CreateModal()
         perfService.CreateModal()
+        rdlService.CreateModal()
 
-        document.querySelector("#PbiDevDownloadRdl").onclick = downloadRdl
+        document.querySelector("#PbiDevDownloadRdl").onclick = () => rdlService.DownloadRdl()
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -71,28 +73,9 @@ function createModal(){
             Utils.CopyToClipboard(getKustoQuery())
         }
 
-        var dataSourceNext = document.querySelector("#PbiDevDataSourceNext")
-        dataSourceNext.onclick = ()=>{
-            if (dataProviders.length == 0){
-                return;
-            }
-            dataSourceIndex = (dataSourceIndex + 1) % dataProviders.length
-            setDataSource(dataSourceIndex)
-        }
-        var dataSourcePrev = document.querySelector("#PbiDevDataSourcePrev")
-        dataSourcePrev.onclick = ()=>{
-            if (dataProviders.length == 0){
-                return;
-            }
-            dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
-            setDataSource(dataSourceIndex)
-        }
-
         fetch(chrome.extension.getURL('/VERSION.txt'))
         .then((resp) => resp.text())
         .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
-
-        perfService.DisablePageIfPerfTesting()
     });
 }
 
@@ -126,88 +109,9 @@ function getKustoQuery(){
     | where rId == "${rootActivityId}"`.replace(/  +/g, '')
 }
 
-function fetchRdl(){
-    if (!clusterUrl || !bearerToken){
-        return
-    }
-    var reportId = window.location.href.match(/rdlreports\/([a-zA-Z0-9-]*)/)[1]
-    var url = `https://${clusterUrl}/export/reports/${reportId}/rdl`
-    return fetch(url, {
-        method: 'GET',
-        headers: {'Authorization': bearerToken}
-    }).then((response) => {
-         return response.text()
-    })
-}
-
-function downloadRdl(){
-    fetchRdl().then((data)=>Utils.Download("Download.rdl", data))
-}
-
 function onReceivedAuthToken(){
-    populateRdlDebugInfo()
+    rdlService.PopulateRdlDebugInfo()
     document.querySelectorAll(".PbiDevDependsOnAuthorization").forEach((btn)=>btn.classList.remove("PbiDevDependsOnAuthorization"))
-}
-
-function populateRdlDebugInfo(){
-    fetchRdl().then((rdl)=>{
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(rdl, "text/xml");
-
-        var dataProviderNodes = xmlDoc.getElementsByTagName("DataProvider")
-        var connectionStringNodes = xmlDoc.getElementsByTagName("ConnectString")
-        for(var i=0; i<dataProviderNodes.length; i++) {
-            dataProviders.push(dataProviderNodes[i].childNodes[0].nodeValue)
-            connectionStrings.push(connectionStringNodes[i].childNodes[0].nodeValue)
-        }
-
-        if (dataProviderNodes.length !== 0){
-            setDataSource(0)
-        }
-
-        var numEmbeddedImages = xmlDoc.getElementsByTagName("EmbeddedImage").length
-        document.querySelector("#PbiDevEmbeddedImages").textContent = numEmbeddedImages
-
-    })
-}
-
-function setDataSource(idx){
-    function createPair(key, value){
-        var container = document.createElement("div")
-        container.classList.add("PbiDevDebugPairOverflow")
-        var span = document.createElement("span")
-        span.classList.add("PbiDevDebugPairLeftOverflow")
-        span.textContent = key
-        var resultContainer = document.createElement("div")
-        resultContainer.classList.add("PbiDevDebugResultContainerOverflow")
-        var result = document.createElement("textarea")
-        result.rows = "1"
-        result.classList.add("PbiDevDebugResultOverflow")
-        result.textContent = value
-
-        container.appendChild(span)
-        container.appendChild(resultContainer)
-        resultContainer.appendChild(result)
-
-        var dataSourceContainer = document.querySelector("#PbiDevDataSources")
-        dataSourceContainer.appendChild(container)
-    }
-
-    var dataSourceContainer = document.querySelector("#PbiDevDataSources")
-    dataSourceContainer.hidden = false
-    while(dataSourceContainer.firstChild){
-        dataSourceContainer.removeChild(dataSourceContainer.firstChild)
-    }
-
-    var dataSourceNav = document.querySelector("#PbiDevDataSourceNav")
-    dataSourceNav.textContent = `${idx + 1} of ${dataProviders.length}`
-    createPair("Data Provider:", dataProviders[idx])
-    var properties = connectionStrings[idx].split(";")
-    properties.forEach((prop)=>{
-        var key, value
-        [key, value] = prop.split("=")
-        createPair(`${key}:`, value)
-    })
 }
 
 function createDebugButton(button) {

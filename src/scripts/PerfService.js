@@ -12,6 +12,7 @@ var PerfService = class{
         }
 
         document.querySelector("#PbiDevPerfEnd").onclick = () => this.EndPerformanceTests()
+        this.DisablePageIfPerfTesting()
     }
 
     DisablePageIfPerfTesting(){

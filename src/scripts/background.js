@@ -144,9 +144,10 @@ function addTabUpdateListener(){
     startScriptExecution('UseLocalAnaheim', ['./src/scripts/LocalAnaheim.js'], tabId)
     startScriptExecution('DevToolbar', [
       './src/scripts/Utils.js'
+      , './src/scripts/RdlService.js'
       , './src/scripts/PerfService.js'
       , './src/scripts/SessionService.js'
-      , './src/scripts/exportApi.js'
+      , './src/scripts/ExportApiService.js'
       , './src/scripts/PbiClients.js'], tabId, 0, ()=>{
       chrome.tabs.insertCSS(tabId, {'file':"./src/style/style.css"});
     })
