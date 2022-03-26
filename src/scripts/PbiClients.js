@@ -11,6 +11,7 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var dataSourceIndex = 0
     var isRenderComplete = false
     var isPerfTesting = false
+    var isLightMode = true
     var exportApiService = new ExportApiService()
     var sessionService = new SessionService()
     var perfService = new PerfService(sessionService)
@@ -76,6 +77,17 @@ function createModal(){
         fetch(chrome.extension.getURL('/VERSION.txt'))
         .then((resp) => resp.text())
         .then((resp) => document.querySelector("#PbiDevVersion").textContent = resp)
+
+        var lightIcon = document.querySelector("#PbiDevLightMode")
+        lightIcon.onclick = () => {toggleLightMode()}
+        chrome.storage.sync.get(["IsLightMode"], function(data){
+            isLightMode = data.IsLightMode === false ? false : true  // undefined falls back to lightmode
+            if (isLightMode){
+                lightIcon.src = chrome.runtime.getURL("./src/images/lightmode.png")
+            }else{
+                setLightMode(false)
+            }
+        })
     });
 }
 
@@ -107,6 +119,39 @@ function getKustoQuery(){
     cluster('Biazure').database('${database}').RdlClientOpen
     | where timestamp > ago(1d)
     | where rId == "${rootActivityId}"`.replace(/  +/g, '')
+}
+
+function toggleLightMode(){
+    isLightMode = !isLightMode
+    setLightMode(isLightMode)
+}
+
+function setLightMode(isLightModeEnabled){
+    var lightIcon = document.querySelector("#PbiDevLightMode")
+    document.querySelector(".PbiDevContainer").classList.toggle("PbiDevContainerDark")
+
+    document.querySelectorAll(".PbiDevCategory").forEach((elem)=>{
+        elem.classList.toggle("PbiDevCategoryDark")
+    })
+    document.querySelectorAll(".PbiDevTextArea").forEach((elem)=>{
+        elem.classList.toggle("PbiDevCategoryDark")
+    })
+    document.querySelectorAll(".PbiDevInput").forEach((elem)=>{
+        elem.classList.toggle("PbiDevCategoryDark")
+    })
+    document.querySelectorAll(".PbiDevButton").forEach((elem)=>{
+        elem.classList.toggle("PbiDevCategoryDark")
+    })
+    document.querySelectorAll(".PbiDevPerfPrompt").forEach((elem)=>{
+        elem.classList.toggle("PbiDevCategoryDark")
+    })
+    if (isLightModeEnabled){
+        lightIcon.src = chrome.runtime.getURL("./src/images/lightmode.png")
+    }else{
+        lightIcon.src = chrome.runtime.getURL("./src/images/darkmode.png")
+    }
+
+    chrome.storage.sync.set({"IsLightMode": isLightModeEnabled})
 }
 
 function onReceivedAuthToken(){

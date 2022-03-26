@@ -21,6 +21,8 @@
 		"src/images/copy.png",
 		"src/images/kusto.png",
 		"src/images/info.png",
+		"src/images/lightmode.png",
+		"src/images/darkmode.png",
 		"src/res/activities.json",
 		"src/pages/debugWindow.html",
 		"src/res/Performance.rdl",

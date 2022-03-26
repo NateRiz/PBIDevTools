@@ -2,7 +2,15 @@
     color: #808080;
     font-size: 16px;
     margin: 0px;
-    text-align: right;
+    float: right;
+    font-weight: bold;
+}
+
+.PbiDevLightImage{
+    float: left;
+    margin: 4px;
+    vertical-align: middle;
+    cursor: pointer;
 }
 
 .PbiDevSubtitle{
@@ -28,6 +36,15 @@
     display: block;
     padding: 8px;
     width: 425px !important;
+}
+
+.PbiDevContainerDark{
+    background-color: #31302f !important;
+    color: #faf9ec !important;
+}
+
+.PbiDevCategoryDark{
+    background-color: #3b3a39 !important;
 }
 
 .PbiDevCategory{
