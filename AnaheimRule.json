@@ -1,0 +1,12 @@
+[{
+    "id": 1,
+    "priority": 1,
+    "action": {
+        "type": "redirect",
+        "redirect": {"regexSubstitution": "https://msit.powerbi.com/"}
+    },
+    "condition": {
+        "regexFilter": ".*/index.*js",
+         "resourceTypes": ["other", "script", "main_frame", "sub_frame"] 
+    }
+}]

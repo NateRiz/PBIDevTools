@@ -33,6 +33,7 @@
 		"webNavigation",
 		"webRequest",
 		"declarativeNetRequest",
+		"declarativeNetRequestFeedback",
 		"scripting",
 		"storage"
 	],
@@ -44,7 +45,15 @@
 		"*://*.analysis-df.windows.net/",
 		"*://*.powerbi.com/*",
 		"*://*.dc.services.visualstudio.com/v2/track/",
-		"*://*.content.powerapps.com/*"
-	]
-
+		"*://*.content.powerapps.com/*",
+		"*://localhost:*/*",
+		"<all_urls>"
+	],
+	"declarative_net_request": {
+		"rule_resources" : [{
+			"id": "AnaheimRule",
+			"enabled": true,
+			"path": "AnaheimRule.json"
+		  }]
+	}
 }
