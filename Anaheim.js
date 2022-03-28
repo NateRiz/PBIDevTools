@@ -12,6 +12,9 @@ function keepSessionAlive(){
         }
     )
     document.querySelector("#AnaheimHost")?.dispatchEvent(keyboardEvent);
+    window.Worker = undefined
+    console.log("worker removed")
+
 }
 
 function backgroundListener(message, sender, sendResponse){
@@ -23,6 +26,8 @@ function backgroundListener(message, sender, sendResponse){
 function main(){
     chrome.runtime.onMessage.addListener(backgroundListener);
     setInterval(keepSessionAlive, 30000);
+    window.Worker = undefined
+
 
 }
 

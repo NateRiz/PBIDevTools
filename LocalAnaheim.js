@@ -25,11 +25,7 @@ function deleteNotice() {
 }
 
 function blockPingWorker(){
-    var script = document.createElement('script');
-    script.type = "module"
-    script.textContent = `window.Worker = undefined`;
-    (document.head||document.documentElement).appendChild(script);
-    script.remove();
+    // window.Worker = undefined
 }
 
 function backgroundListener(message, sender, sendResponse){

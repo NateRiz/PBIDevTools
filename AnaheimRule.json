@@ -3,10 +3,10 @@
     "priority": 1,
     "action": {
         "type": "redirect",
-        "redirect": {"regexSubstitution": "https://msit.powerbi.com/"}
+        "redirect": {"regexSubstitution": "https:/localhost:4200/index.js"}
     },
     "condition": {
         "regexFilter": ".*/index.*js",
-         "resourceTypes": ["other", "script", "main_frame", "sub_frame"] 
+         "resourceTypes": ["other", "script", "sub_frame"] 
     }
 }]
