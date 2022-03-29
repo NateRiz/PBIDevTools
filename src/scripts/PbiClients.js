@@ -16,6 +16,7 @@ if (window.PbiDevPbiClientsInjected === undefined){
     var sessionService = new SessionService()
     var perfService = new PerfService(sessionService)
     var rdlService = new RdlService()
+    var throttleService = new ThrottleService()
 }
 
 function isPingUrl(url){
@@ -53,8 +54,7 @@ function createModal(){
         sessionService.CreateModal()
         perfService.CreateModal()
         rdlService.CreateModal()
-
-        document.querySelector("#PbiDevDownloadRdl").onclick = () => rdlService.DownloadRdl()
+        throttleService.CreateModal()
 
         var copyImages = document.querySelectorAll(".PbiDevCopy")
         copyImages.forEach(function(image){
@@ -301,6 +301,7 @@ function main() {
     createDebugButton();
     createModal();
 }
+
 
 main();
 

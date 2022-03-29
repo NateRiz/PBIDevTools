@@ -271,6 +271,30 @@
         <button id="PbiDevStartPerf" class="PbiDevButton" type="button">Start</button>
       </div>      
     </div>
+
+    <br>
+    <div class="PbiDevCategoryTitle">Throttle Spammer</div>
+      <div class="PbiDevCategory">
+        <div class="PbiDevDebugPair">
+          <span>Number of requests:</span>
+          <div class="PbiDevDebugResult">
+            <input id="PbiDevThrottleAmount" class="PbiDevInput" value="1">
+          </div>
+          <img id="ThrottleSessionInfo" class="PbiDevInfo">
+          <span id="ThrottleSessionInfoTooltip" class="PbiDevInfoTooltip">
+            * Send multiple create session requests to trigger a 429. This is async, and all requests will be run at once. ~15-20 should trigger a 429.
+            Disabled until first ping occurs.
+            <br>
+            <br>
+          </span>
+        </div>
+        <div class="PbiDevCenter">
+          <button id="PbiDevThrottleButton" class = "PbiDevButton PbiDevDependsOnAuthorization" type="button">Throttle</button>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 
   <br>
@@ -282,9 +306,7 @@
       <br>
       <button id="PbiDevPerfEnd" class="PbiDevButton" type="button">End</button>
     </div>
-
   </div>
 
-  </div>
 </div>
 </div>

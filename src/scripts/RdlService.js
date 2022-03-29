@@ -20,6 +20,8 @@ var RdlService = class{
             dataSourceIndex = ((dataSourceIndex - 1) === -1 ? dataProviders.length-1 : dataSourceIndex - 1)
             this.SetDataSource(dataSourceIndex)
         }
+
+        document.querySelector("#PbiDevDownloadRdl").onclick = () => rdlService.DownloadRdl()
     }
 
     

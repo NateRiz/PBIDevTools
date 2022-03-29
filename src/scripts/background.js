@@ -144,6 +144,7 @@ function addTabUpdateListener(){
     startScriptExecution('UseLocalAnaheim', ['./src/scripts/LocalAnaheim.js'], tabId)
     startScriptExecution('DevToolbar', [
       './src/scripts/Utils.js'
+      , './src/scripts/ThrottleService.js'
       , './src/scripts/RdlService.js'
       , './src/scripts/PerfService.js'
       , './src/scripts/SessionService.js'
